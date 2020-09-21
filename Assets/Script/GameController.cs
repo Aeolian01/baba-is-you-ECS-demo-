@@ -1,11 +1,15 @@
 ﻿using Entitas;
 using Entitas.VisualDebugging.Unity;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
 	private Systems _gameSystem;
 	public GameObject Player;
+
+	//位置->实体 映射
+	public static Dictionary<Vector2, List<Entity>> posToEntity;
     public void Start()
 	{
 		var contexts = Contexts.sharedInstance;
@@ -15,10 +19,6 @@ public class GameController : MonoBehaviour
 #endif
 		var playerEntity = Contexts.Default.CreateEntity();
 		playerEntity.Add<PosComp>();
-		playerEntity.Add<VelComp>();
-        playerEntity.Add<InputComp>();
-		playerEntity.Add<RotComp>();
-		playerEntity.Add<PlayerTag>();
 		playerEntity.Add<ViewComp>().setValue(Player);
 		var view = Player.GetComponent<View>();
 		view.Link(Contexts.Default, playerEntity);
@@ -40,4 +40,13 @@ public class GameController : MonoBehaviour
     {
 		_gameSystem.TearDown();
     }
+
+	public static void Win() {
+		Debug.Log("win!");
+		//下一关
+	}
+	//加载指定关卡
+	public static void LoadLevel(int id) { 
+		
+	}
 }

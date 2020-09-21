@@ -7,19 +7,10 @@ public class InputSystem : IExecuteSystem
 {
     public void Execute()
     {
-        var _group = Context<Default>.AllOf<InputComp>();
+        var _group = Context<Default>.AllOf<YouComp>();
         foreach (var e in _group)
         {
-            //水平数值输入
-            var input = e.Modify<InputComp>();
-            var In= new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-
-            //鼠标位置
-            var mousePos = Input.mousePosition;
-            Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(new Vector2(mousePos.x, mousePos.y));
-            Debug.Log(mouseWorldPos);
-            input.setValue(In, mouseWorldPos);
-
+            e.Get<YouComp>().SetValue((int)Input.GetAxisRaw("Horizontal"), (int)Input.GetAxisRaw("Vertical"));
         }
     }
 }

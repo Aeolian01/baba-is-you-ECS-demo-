@@ -8,25 +8,19 @@ public class PlayerInputProcessSystem :ReactiveSystem
 {
     public PlayerInputProcessSystem()
     {
-        monitors += Context<Default>.AllOf<InputComp>().OnAdded(Process) ;
+        monitors += Context<Default>.AllOf<YouComp>().OnAdded(Process) ;
 
     }
-	protected void Process(List<Entity> inputs)
+	protected void Process(List<Entity> youEntities)
 	{
-        var playerEntity = Context<Default>.AllOf<PlayerTag>().GetSingleEntity();
-        if (playerEntity == null)
-            return;
-        foreach(var input in inputs)
+        foreach(var you in youEntities)
         {
-            //速度
-            var vel = playerEntity.Modify<VelComp>();
-            var dir = input.Get<InputComp>().Value;
-            vel.setValue(dir);
-
-            //朝向
-            var targetDir = input.Get<InputComp>().MousePos - playerEntity.Get<PosComp>().Value;
-            var angle = Vector2.SignedAngle(Vector2.up, targetDir);
-            playerEntity.Modify<RotComp>().setValue(angle);
+            int moveX,moveY;
+            if (you.Get<YouComp>().horizontal == 0) moveX = 0;
+            moveX = (you.Get<YouComp>().horizontal > 0) ? 1 : -1;
+            if (you.Get<YouComp>().horizontal == 0) moveY = 0;
+            moveY = (you.Get<YouComp>().vertical > 0) ? 1 : -1;
+            you.Modify<YouComp>().SetValue(moveX, moveY);
         }
 	}
 }

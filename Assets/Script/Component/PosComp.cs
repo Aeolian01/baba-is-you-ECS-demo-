@@ -7,10 +7,10 @@ using UnityEngine;
 [Default]
 public class PosComp : IComponent
 {
-    public Vector2 Value;
+    public Vector2 value;
 
-    public void setValue(Vector2 pos)
+    public void SetValue(Vector2 pos)
     {
-        Value = pos;
+        value = pos;
     }
 }
