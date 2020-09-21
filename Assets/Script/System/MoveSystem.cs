@@ -1,26 +1,39 @@
 ﻿using Entitas;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
 
 //System执行顺序（越大优先级越高）
 [UnnamedFeature(0)]
 
-public class MoveSystem : IExecuteSystem
+public class MoveSystem : ReactiveSystem
 {
-    public void Execute()
+    public MoveSystem()
+    {
+        monitors += Context<Default>.AllOf<YouComp, PosComp>().OnAdded(move).Where(e => !(e.Get<YouComp>().horizontal == 0 
+                                                                                       && e.Get<YouComp>().vertical == 0));
+    }
+
+    public void move(List<Entity> entities)
     {
         //移动You
-        var playerGroup = Context<Default>.AllOf<YouComp, PosComp>();
-        foreach (var e in playerGroup)
+        foreach (var e in entities)
         {
-            var newPos = new Vector2(e.Get<YouComp>().horizontal + e.Get<PosComp>().value.x, e.Get<YouComp>().vertical + e.Get<PosComp>().value.y);
-            move(e,newPos);
+            var you = e.Get<YouComp>();
+            //Debug.Log($"horizontal:{you.horizontal} vertical:{you.vertical}");
+            var newPos = new Vector2(you.horizontal + e.Get<PosComp>().value.x, 
+                                     you.vertical + e.Get<PosComp>().value.y);
+            move(e, newPos);
         }
     }
-    private void move(Entity e,Vector2 newPos)
+    private void move(Entity e, Vector2 newPos)
     {
         //在新的位置查看是否与stop push win重合
         List<Entity> overlapEntities;
+
+        if (GameController.posToEntity == null || GameController.posToEntity.Count == 0)
+            return;
+
         //有重叠
         if (GameController.posToEntity.TryGetValue(newPos, out overlapEntities))
         {
@@ -38,7 +51,7 @@ public class MoveSystem : IExecuteSystem
             }
             //尝试推 
             //递归
-            movePush(e,new Vector2(e.Get<YouComp>().horizontal,e.Get<YouComp>().vertical), overlapEntities);
+            movePush(e, new Vector2(e.Get<YouComp>().horizontal, e.Get<YouComp>().vertical), overlapEntities);
             //移动到新的位置
             //修改两个格子的映射信息
             GameController.posToEntity[e.Get<PosComp>().value].Remove(e);
@@ -88,9 +101,9 @@ public class MoveSystem : IExecuteSystem
         }
         return false;
     }
-    private void movePush(Entity e,Vector2 dir, List<Entity> list)
+    private void movePush(Entity e, Vector2 dir, List<Entity> list)
     {
-        var nextPos = e.Get<PosComp>().value+dir;
+        var nextPos = e.Get<PosComp>().value + dir;
 
         foreach (var entity in list)
         {
