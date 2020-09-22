@@ -1,22 +1,29 @@
 ﻿using Entitas;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 //System执行顺序（越大优先级越高）
 [UnnamedFeature(0)]
 public class TransSystem : IExecuteSystem
 {
-    List<Vector2> offsetPos1 = new List<Vector2> { new Vector2(1, 0),
-                                                   new Vector2(0, 1),
-                                                };
-    List<Vector2> offsetPos2 = new List<Vector2> { new Vector2(2, 0),
-                                                   new Vector2(0, 2),
-                                                };
+    List<Vector2> offsetPos1 = new List<Vector2> { new Vector2(1, 0), new Vector2(0, 1) };
+    List<Vector2> offsetPos2 = new List<Vector2> { new Vector2(2, 0), new Vector2(0, 2) };
     public void Execute()
     {
         var _group = Context<Default>.AllOf<ObjectWordsComp, PosComp>();
-        foreach (var e in _group)
+        List<Entity> entities= new List<Entity>();
+        entities.AddRange(_group);
+        entities.Sort((x, y) =>
+        {
+            var posX = x.Get<PosComp>().value;
+            var posY = y.Get<PosComp>().value;
+            if (posX.x == posY.x)
+                return (int)(posX.y - posY.y);
+            return (int)(posX.x - posY.x);
+        });
+        foreach(var e in entities)
         {
             Trans(e);
         }
