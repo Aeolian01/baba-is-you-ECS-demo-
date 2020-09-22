@@ -71,7 +71,7 @@ public class MoveSystem : ReactiveSystem
     {
         foreach (var entity in list)
         {
-            if (entity.Has<StopComp>())
+            if (entity.Has<PropertyComp>()&&entity.Get<PropertyComp>().name==Name.Properties.Stop)
             {
                 return true;
             }
@@ -93,7 +93,7 @@ public class MoveSystem : ReactiveSystem
     {
         foreach (var entity in list)
         {
-            if (entity.Has<WinComp>())
+            if (entity.Has<PropertyComp>() && entity.Get<PropertyComp>().name == Name.Properties.Win)
             {
                 return true;
             }
@@ -106,7 +106,7 @@ public class MoveSystem : ReactiveSystem
 
         foreach (var entity in list)
         {
-            if (entity.Has<PushComp>())
+            if (entity.Has<PropertyComp>() && entity.Get<PropertyComp>().name == Name.Properties.Push)
             {
                 move(e, nextPos);
             }

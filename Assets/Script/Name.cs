@@ -1,4 +1,6 @@
-﻿public static class Name
+﻿using Entitas;
+
+public static class Name
 {
     public enum SpriteName
     {
@@ -17,6 +19,25 @@
         PushWord,
         StopWord,
     }
+
+    public enum Objects
+    {
+        Empty,
+        Wall,
+        Baba,
+        Flag,
+        Rock,
+    }
+
+    public enum Properties
+    {
+        None,
+        Stop,
+        Push,
+        Win,
+        You,
+    }
+
     public enum ObjectWords
     {
         WallWord,
@@ -25,9 +46,9 @@
         RockWord,
     }
 
-    public enum IsWord 
+    public enum IsWord
     {
-        IsWord 
+        IsWord
     }
 
     public enum ProperWords
@@ -38,5 +59,12 @@
         StopWord,
     }
 
+    public static bool IsHas<T1, T2>(Entity e, T1 p, T2 q) where T1:IComponent
+    {
+        if ()
+            ;
+        return false;
+    }
 }
+
 
