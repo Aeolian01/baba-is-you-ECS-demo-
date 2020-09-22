@@ -4,11 +4,11 @@ public static class Name
 {
     public enum SpriteName
     {
+        Empty,
         Wall,
         Baba,
         Flag,
         Rock,
-        Empty,
         WallWord,
         BabaWord,
         FlagWord,

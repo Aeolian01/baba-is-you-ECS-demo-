@@ -25,6 +25,9 @@ public class MapReader:Singleton<MapReader>
             row++;
         }
         sr.Close();
+        foreach (var i in map) {
+            Debug.Log(i);
+        }
     }
 
 }
