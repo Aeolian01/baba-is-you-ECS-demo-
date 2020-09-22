@@ -6,8 +6,8 @@ using UnityEngine;
 
 public class MapReader:Singleton<MapReader>
 {
-    private const int mapWidth = 20;
-    private const int mapHeight = 20;
+    public const int mapWidth = 20;
+    public const int mapHeight = 20;
 
     public static int[,] map= new int[mapWidth, mapHeight];
     public void ReadFile(int id) {
