@@ -4,13 +4,12 @@ using System.Security.Cryptography;
 using UnityEngine;
 
 //System执行顺序（越大优先级越高）
-[UnnamedFeature(0)]
-
+[UnnamedFeature(50)]
 public class MoveSystem : ReactiveSystem
 {
     public MoveSystem()
     {
-        monitors += Context<Default>.AllOf<YouComp, PosComp, InputComp>().OnAdded(move).Where(e => !(e.Get<InputComp>().horizontal == 0 
+        monitors += Context<Default>.AllOf<PosComp, InputComp>().OnAdded(move).Where(e => !(e.Get<InputComp>().horizontal == 0 
                                                                                        && e.Get<InputComp>().vertical == 0));
     }
 
