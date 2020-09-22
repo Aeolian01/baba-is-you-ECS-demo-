@@ -21,9 +21,16 @@ public class GameController : Singleton<GameController>
 #endif
 		var Entity = Contexts.Default.CreateEntity();
 		Entity.Add<PosComp>();
-		Entity.Add<YouComp>();
+		Entity.Add<ObjectComp>().SetValue(Name.Objects.Baba);
+		Entity.Add<PropertyComp>().SetValue(Name.Properties.You);
 
-
+		for(int i=0;i<4;i++)
+        {
+			var t = Contexts.Default.CreateEntity();
+			t.Add<PosComp>();
+			Entity.Add<ObjectComp>().SetValue(Name.Objects.Wall);
+			Entity.Add<PropertyComp>().SetValue(Name.Properties.Stop);
+		}
 
 #if UNITY_EDITOR
 		_gameSystem = FeatureObserverHelper.CreateFeature(null);

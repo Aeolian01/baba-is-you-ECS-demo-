@@ -1,4 +1,6 @@
-﻿public static class Name
+﻿using Entitas;
+
+public static class Name
 {
     public enum SpriteName
     {
@@ -17,6 +19,25 @@
         PushWord,
         StopWord,
     }
+
+    public enum Objects
+    {
+        Empty,
+        Wall,
+        Baba,
+        Flag,
+        Rock,
+    }
+
+    public enum Properties
+    {
+        None,
+        Stop,
+        Push,
+        Win,
+        You,
+    }
+
     public enum ObjectWords
     {
         WallWord,
@@ -25,9 +46,9 @@
         RockWord,
     }
 
-    public enum IsWord 
+    public enum IsWord
     {
-        IsWord 
+        IsWord
     }
 
     public enum ProperWords
@@ -37,6 +58,6 @@
         PushWord,
         StopWord,
     }
-
 }
+
 

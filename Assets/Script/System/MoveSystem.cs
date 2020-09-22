@@ -4,13 +4,12 @@ using System.Security.Cryptography;
 using UnityEngine;
 
 //System执行顺序（越大优先级越高）
-[UnnamedFeature(0)]
-
+[UnnamedFeature(50)]
 public class MoveSystem : ReactiveSystem
 {
     public MoveSystem()
     {
-        monitors += Context<Default>.AllOf<YouComp, PosComp, InputComp>().OnAdded(move).Where(e => !(e.Get<InputComp>().horizontal == 0 
+        monitors += Context<Default>.AllOf<PosComp, InputComp>().OnAdded(move).Where(e => !(e.Get<InputComp>().horizontal == 0 
                                                                                        && e.Get<InputComp>().vertical == 0));
     }
 
@@ -72,7 +71,7 @@ public class MoveSystem : ReactiveSystem
     {
         foreach (var entity in list)
         {
-            if (entity.Has<StopComp>())
+            if (entity.Has<PropertyComp>()&&entity.Get<PropertyComp>().name==Name.Properties.Stop)
             {
                 return true;
             }
@@ -94,7 +93,7 @@ public class MoveSystem : ReactiveSystem
     {
         foreach (var entity in list)
         {
-            if (entity.Has<WinComp>())
+            if (entity.Has<PropertyComp>() && entity.Get<PropertyComp>().name == Name.Properties.Win)
             {
                 return true;
             }
@@ -107,7 +106,7 @@ public class MoveSystem : ReactiveSystem
 
         foreach (var entity in list)
         {
-            if (entity.Has<PushComp>())
+            if (entity.Has<PropertyComp>() && entity.Get<PropertyComp>().name == Name.Properties.Push)
             {
                 move(e, nextPos);
             }
