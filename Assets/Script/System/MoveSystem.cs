@@ -10,8 +10,8 @@ public class MoveSystem : ReactiveSystem
 {
     public MoveSystem()
     {
-        monitors += Context<Default>.AllOf<YouComp, PosComp>().OnAdded(move).Where(e => !(e.Get<YouComp>().horizontal == 0 
-                                                                                       && e.Get<YouComp>().vertical == 0));
+        monitors += Context<Default>.AllOf<YouComp, PosComp, InputComp>().OnAdded(move).Where(e => !(e.Get<InputComp>().horizontal == 0 
+                                                                                       && e.Get<InputComp>().vertical == 0));
     }
 
     public void move(List<Entity> entities)
@@ -19,10 +19,10 @@ public class MoveSystem : ReactiveSystem
         //移动You
         foreach (var e in entities)
         {
-            var you = e.Get<YouComp>();
-            //Debug.Log($"horizontal:{you.horizontal} vertical:{you.vertical}");
-            var newPos = new Vector2(you.horizontal + e.Get<PosComp>().value.x, 
-                                     you.vertical + e.Get<PosComp>().value.y);
+            var input = e.Get<InputComp>();
+            Debug.Log($"horizontal:{input.horizontal} vertical:{input.vertical}");
+            var newPos = new Vector2(input.horizontal + e.Get<PosComp>().value.x, 
+                                     input.vertical + e.Get<PosComp>().value.y);
             move(e, newPos);
         }
     }
@@ -51,7 +51,7 @@ public class MoveSystem : ReactiveSystem
             }
             //尝试推 
             //递归
-            movePush(e, new Vector2(e.Get<YouComp>().horizontal, e.Get<YouComp>().vertical), overlapEntities);
+            movePush(e, new Vector2(e.Get<InputComp>().horizontal, e.Get<InputComp>().vertical), overlapEntities);
             //移动到新的位置
             //修改两个格子的映射信息
             GameController.posToEntity[e.Get<PosComp>().value].Remove(e);
