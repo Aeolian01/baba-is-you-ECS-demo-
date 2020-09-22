@@ -4,11 +4,11 @@ public static class Name
 {
     public enum SpriteName
     {
-        Empty,
         Wall,
         Baba,
         Flag,
         Rock,
+        Empty,
         WallWord,
         BabaWord,
         FlagWord,
@@ -18,24 +18,25 @@ public static class Name
         YouWord,
         PushWord,
         StopWord,
+
     }
 
     public enum Objects
     {
-        Empty,
         Wall,
         Baba,
         Flag,
         Rock,
+        Empty,
     }
 
     public enum Properties
     {
-        None,
-        Stop,
-        Push,
         Win,
         You,
+        Push,
+        Stop,
+        None,
     }
 
     public enum ObjectWords
@@ -57,6 +58,18 @@ public static class Name
         YouWord,
         PushWord,
         StopWord,
+    }
+    public static Properties PwordToP(ProperWords word)
+    {
+        return (Properties)word;
+    }
+    public static Objects OwordToO(ObjectWords word)
+    {
+        return (Objects)word;
+    }
+    public static SpriteName OwordToSName(ObjectWords word)
+    {
+        return (SpriteName)word;
     }
 }
 
