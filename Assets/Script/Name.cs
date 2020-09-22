@@ -58,13 +58,6 @@ public static class Name
         PushWord,
         StopWord,
     }
-
-    public static bool IsHas<T1, T2>(Entity e, T1 p, T2 q) where T1:IComponent
-    {
-        if ()
-            ;
-        return false;
-    }
 }
 
 
