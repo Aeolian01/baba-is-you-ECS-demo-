@@ -10,7 +10,17 @@ public class InputSystem : IExecuteSystem
         var _group = Context<Default>.AllOf<YouComp>();
         foreach (var e in _group)
         {
-            e.Get<YouComp>().SetValue((int)Input.GetAxisRaw("Horizontal"), (int)Input.GetAxisRaw("Vertical"));
+            if (!e.Has<InputComp>())
+                e.Add<InputComp>();
+            int h = (int)Input.GetAxisRaw("Horizontal");
+            int v = (int)Input.GetAxisRaw("Vertical");
+            var input = e.Get<InputComp>();
+            if (input.horizontal == h && input.vertical == v)
+                return;
+            if (h != 0)
+                e.Modify<InputComp>().SetValue(h, 0);
+            else
+                e.Modify<InputComp>().SetValue(0, v);
         }
     }
 }

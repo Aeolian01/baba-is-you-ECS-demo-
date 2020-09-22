@@ -9,7 +9,8 @@ public class GameController : MonoBehaviour
 	public GameObject Player;
 
 	//位置->实体 映射
-	public static Dictionary<Vector2, List<Entity>> posToEntity;
+	public static Dictionary<Vector2, List<Entity>> posToEntity=new Dictionary<Vector2, List<Entity>>();
+
     public void Start()
 	{
 		var contexts = Contexts.sharedInstance;
@@ -18,11 +19,12 @@ public class GameController : MonoBehaviour
 #if UNITY_EDITOR
 		ContextObserverHelper.ObserveAll(contexts);
 #endif
-		var playerEntity = Contexts.Default.CreateEntity();
-		playerEntity.Add<PosComp>();
-		playerEntity.Add<ViewComp>().setValue(Player);
-		var view = Player.GetComponent<View>();
-		view.Link(Contexts.Default, playerEntity);
+		var Entity = Contexts.Default.CreateEntity();
+		Entity.Add<PosComp>();
+		Entity.Add<YouComp>();
+
+
+
 #if UNITY_EDITOR
 		_gameSystem = FeatureObserverHelper.CreateFeature(null);
 #else
