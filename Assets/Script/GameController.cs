@@ -13,6 +13,7 @@ public class GameController : MonoBehaviour
     public void Start()
 	{
 		var contexts = Contexts.sharedInstance;
+		LoadLevel(1);
 
 #if UNITY_EDITOR
 		ContextObserverHelper.ObserveAll(contexts);
@@ -46,7 +47,7 @@ public class GameController : MonoBehaviour
 		//下一关
 	}
 	//加载指定关卡
-	public static void LoadLevel(int id) { 
-		
+	public static void LoadLevel(int id) {
+		MapReader.Instance.ReadFile(id);
 	}
 }
