@@ -6,7 +6,10 @@ using UnityEngine;
 
 public class MapReader:Singleton<MapReader>
 {
-    public int[,] map= new int[5,5];
+    private const int mapWidth = 20;
+    private const int mapHeight = 20;
+
+    public static int[,] map= new int[mapWidth, mapHeight];
     public void ReadFile(int id) {
         string path = Application.dataPath + "/Resources/"+"level_" + id +".csv";
         FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None);
@@ -22,9 +25,6 @@ public class MapReader:Singleton<MapReader>
             row++;
         }
         sr.Close();
-        foreach (var i in map) {
-            Debug.Log(i);
-        }
     }
 
 }
