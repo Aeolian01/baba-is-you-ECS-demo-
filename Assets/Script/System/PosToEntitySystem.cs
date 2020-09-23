@@ -33,6 +33,7 @@ public class PosToEntitySystem : IExecuteSystem
                 else
                 {
                     GameData.Instance.gos[e].DestroyGameObject();
+                    GameData.Instance.gos.Remove(e);
                     e.Destroy();
                 }
             }

@@ -16,8 +16,6 @@ public class InputSystem : IExecuteSystem
             int y = (int)Input.GetAxisRaw("Horizontal");
             int x = (int)Input.GetAxisRaw("Vertical");
             var input = e.Get<InputComp>();
-            if (input.x == x && (input.y == y || x != 0))
-                return;
             if (x != 0)
                 e.Modify<InputComp>().SetValue(x, 0);
             else

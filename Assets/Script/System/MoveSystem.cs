@@ -15,6 +15,9 @@ public class MoveSystem : ReactiveSystem
 
     public void move(List<Entity> entities)
     {
+        if (GameData.Timer < 0.12f)
+            return;
+        GameData.Timer = 0;
         //移动You
         foreach (var e in entities)
         {
