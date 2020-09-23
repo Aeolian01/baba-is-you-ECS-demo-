@@ -9,7 +9,7 @@ public class MoveSystem : ReactiveSystem
 {
     public MoveSystem()
     {
-        monitors += Context<Default>.AllOf<PosComp, InputComp>().OnAdded(move).Where(e => !(e.Get<InputComp>().x == 0 
+        monitors += Context<Default>.AllOf<InputComp>().OnAdded(move).Where(e => !(e.Get<InputComp>().x == 0 
                                                                                        && e.Get<InputComp>().y == 0));
     }
 
@@ -20,7 +20,7 @@ public class MoveSystem : ReactiveSystem
         {
             var input = e.Get<InputComp>();
             Debug.Log($"dir:({input.x},{input.y})");
-            Debug.Log($"pos:({e.Get<PosComp>().value.x},{e.Get<PosComp>().value.y})");
+            //Debug.Log($"pos:({e.Get<PosComp>().value.x},{e.Get<PosComp>().value.y})");
             var newPos = new Vector2(input.x + e.Get<PosComp>().value.x, 
                                      input.y + e.Get<PosComp>().value.y);
             move(e, newPos,new Vector2(input.x,input.y));
