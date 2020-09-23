@@ -20,7 +20,7 @@ public class GameController: MonoBehaviour
         ContextObserverHelper.ObserveAll(contexts);
 #endif
         gameData.LoadLevel(1);
-        Debug.Log(gameData.sprites[gameData.posToEntity[new Vector2(0, 0)][0].Get<SpriteComp>().name]);
+        //Debug.Log(gameData.sprites[gameData.posToEntity[new Vector2(0, 0)][0].Get<SpriteComp>().name]);
         #region 测试代码
 #if false
         var Entity = Contexts.Default.CreateEntity();
@@ -74,6 +74,7 @@ public class GameController: MonoBehaviour
 		_gameSystem = new Feature(null);
 #endif
         _gameSystem.Initialize();
+        TransHelper.Instance.Trans();
     }
 
     public void Update()
