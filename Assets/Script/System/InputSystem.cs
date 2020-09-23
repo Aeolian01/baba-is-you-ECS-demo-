@@ -19,9 +19,9 @@ public class InputSystem : IExecuteSystem
             if (input.horizontal == h && input.vertical == v)
                 return;
             if (h != 0)
-                e.Modify<InputComp>().SetValue(h, 0);
+                e.Modify<InputComp>().SetValue(0, h);
             else
-                e.Modify<InputComp>().SetValue(0, v);
+                e.Modify<InputComp>().SetValue(v, 0);
         }
     }
 }

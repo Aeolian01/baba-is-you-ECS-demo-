@@ -27,6 +27,7 @@ public class GameData
         {
             for (int j = 0; j < MapReader.mapWidth; j++)
             {
+                Debug.Log($"坐标:{i},{j}");
                 var pos = new Vector2(DetlaSize * (j + 1), DetlaSize * (i + 1));
                 var unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
                 unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
@@ -58,18 +59,20 @@ public class GameData
             }
         }
         //非Empty对象
-        for (int i = MapReader.mapHeight - 1; i >= 0; i--)
+        int m = 0, n = 0;
+        for (int i = MapReader.mapHeight - 1; i >= 0; i--,m++)
         {
-            for (int j = 0; j < MapReader.mapWidth; j++)
+            n = 0;
+            for (int j = 0; j < MapReader.mapWidth; j++,n++)
             {
-                if ((Name.SpriteName)MapReader.map[i, j] == Name.SpriteName.Empty)
+                if ((Name.SpriteName)MapReader.map[m, n] == Name.SpriteName.Empty)
                     continue;
                 var pos = new Vector2(DetlaSize * (j + 1), DetlaSize * (i + 1));
                 var entity = Contexts.Default.CreateEntity();
 #if UNITY_EDITOR
-                entity.name = ((Name.SpriteName)MapReader.map[i, j]).ToString() + $"({i},{j})";
+                entity.name = ((Name.SpriteName)MapReader.map[m, n]).ToString() + $"({i},{j})";
 #endif
-                switch (MapReader.map[i, j])
+                switch (MapReader.map[m, n])
                 {
                     case (int)Name.SpriteName.Wall:
                         var unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
