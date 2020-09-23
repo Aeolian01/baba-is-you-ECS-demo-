@@ -9,6 +9,7 @@ public static class Name
         Baba,
         Flag,
         Rock,
+        Edge,
         WallWord,
         BabaWord,
         FlagWord,
