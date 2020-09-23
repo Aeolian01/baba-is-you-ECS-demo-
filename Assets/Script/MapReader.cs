@@ -9,8 +9,9 @@ public class MapReader:Singleton<MapReader>
     public const int mapWidth = 20;
     public const int mapHeight = 20;
 
-    public static int[,] map= new int[mapWidth, mapHeight];
+    public static int[,] map;
     public void ReadFile(int id) {
+        map = new int[mapWidth, mapHeight];
         string path = Application.dataPath + "/Resources/"+"level_" + id +".csv";
         FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None);
         StreamReader sr = new StreamReader(fs, System.Text.Encoding.GetEncoding(936));

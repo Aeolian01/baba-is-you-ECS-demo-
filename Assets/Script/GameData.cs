@@ -11,8 +11,11 @@ public class GameData
 
     public static float Timer = 0;
 
+    public bool isWin = false;
+
     public Transform Map = GameObject.Find("Map").transform;
     public const int DetlaSize = 25;
+
     //spriteName -- Sprite
     public Dictionary<Name.SpriteName, Sprite> sprites = new Dictionary<Name.SpriteName, Sprite>();
 
@@ -22,6 +25,7 @@ public class GameData
 
     public void LoadLevel(int id)
     {
+        
         MapReader.Instance.ReadFile(id);
         //地板
         for (int i = MapReader.mapHeight - 1; i >= 0; i--)
@@ -336,7 +340,7 @@ public class GameData
                 }
             }
         }
-
+        Debug.Log("Load Complete");
     }
 
     //刷新地图显示
@@ -372,8 +376,17 @@ public class GameData
 
     public void Win()
     {
-        Debug.Log("win!");
-        //下一关
+        Debug.Log("Win!");
+        GameController.GameSystem.ClearReactiveSystems();
+        Contexts.Default.DestroyAllEntities();
+        foreach (var go in gos)
+        {
+            GameObject.Destroy(go.Value);
+        }
+        gos.Clear();
+        posToEntity.Clear();
+        LoadLevel(1);
+        isWin = false;
     }
 }
 

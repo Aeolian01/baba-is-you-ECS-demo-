@@ -8,7 +8,9 @@ using UnityEngine.UI;
 public class GameController: MonoBehaviour
 {
    
-    private Systems _gameSystem;
+    private static Systems _gameSystem;
+
+    public static Systems GameSystem { get => _gameSystem; set => _gameSystem = value; }
 
     public void Start()
     {
@@ -69,24 +71,27 @@ public class GameController: MonoBehaviour
 
 
 #if UNITY_EDITOR
-        _gameSystem = FeatureObserverHelper.CreateFeature(null);
+        GameSystem = FeatureObserverHelper.CreateFeature(null);
 #else
 		//init systems, auto collect matched systems, no manual Systems.Add(ISystem) required
 		_gameSystem = new Feature(null);
 #endif
-        _gameSystem.Initialize();
+        GameSystem.Initialize();
         TransHelper.Instance.Trans();
     }
 
     public void Update()
     {
         GameData.Timer += Time.deltaTime;
-        _gameSystem.Execute();
-        _gameSystem.Cleanup();
+        GameSystem.Execute();
+        GameSystem.Cleanup();
+        if (GameData.Instance.isWin) {
+            GameData.Instance.Win();
+        }
     }
     private void OnDestroy()
     {
-        _gameSystem.TearDown();
+        GameSystem.TearDown();
     }
 
   

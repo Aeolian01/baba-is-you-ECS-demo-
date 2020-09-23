@@ -26,7 +26,17 @@ public class MoveSystem : ReactiveSystem
             //Debug.Log($"pos:({e.Get<PosComp>().value.x},{e.Get<PosComp>().value.y})");
             var newPos = new Vector2(input.x + e.Get<PosComp>().value.x, 
                                      input.y + e.Get<PosComp>().value.y);
-            move(e, newPos,new Vector2(input.x,input.y));
+            if (move(e, newPos, new Vector2(input.x, input.y))) {
+                //然后检测赢了吗   移动之后再检测
+                List<Entity> overlapEntities;
+                if (GameData.Instance.posToEntity.TryGetValue(e.Get<PosComp>().value, out overlapEntities)) {
+                    if (hasWin(overlapEntities))
+                    {
+                        GameData.Instance.isWin = true;
+                    }
+                }
+            }
+            
         }
     }
     private bool move(Entity e, Vector2 newPos,Vector2 dir)
@@ -46,8 +56,6 @@ public class MoveSystem : ReactiveSystem
             //重叠元素有Edge 不可到达
             if (hasEdge(overlapEntities)) return false;
 
-            //然后检测赢了吗   移动之后再检测
-
             //尝试推走重叠实体
             //递归
             if (movePush(dir, overlapEntities))
@@ -57,12 +65,15 @@ public class MoveSystem : ReactiveSystem
 
                 //移动到新的位置
                 e.Modify<PosComp>().SetValue(newPos);
+                
                 return true;
             }
             else {
                 //推不走 那当前实体就过不去
                 return false;
             }
+
+
         }
         //没有重叠
         else
