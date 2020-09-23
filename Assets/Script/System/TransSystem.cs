@@ -9,8 +9,8 @@ public class TransSystem : ReactiveSystem
 {
     public TransSystem()
     {
-        monitors += Context<Default>.AllOf<PosComp, InputComp>().OnAdded(TransHelper.Instance.Trans).Where(e => !(e.Get<InputComp>().horizontal == 0
-                                                                                     && e.Get<InputComp>().vertical == 0));
+        //monitors += Context<Default>.AllOf<PosComp, InputComp>().OnAdded(TransHelper.Instance.Trans).Where(e => !(e.Get<InputComp>().horizontal == 0
+         //                                                                            && e.Get<InputComp>().vertical == 0));
     }
     
 }
