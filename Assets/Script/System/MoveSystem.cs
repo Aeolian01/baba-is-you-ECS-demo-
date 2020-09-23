@@ -30,11 +30,11 @@ public class MoveSystem : ReactiveSystem
         //在新的位置查看是否与stop push win重合
         List<Entity> overlapEntities;
 
-        if (GameController.Instance.posToEntity == null || GameController.Instance.posToEntity.Count == 0)
+        if (GameData.Instance.posToEntity == null || GameData.Instance.posToEntity.Count == 0)
             return;
 
         //有重叠
-        if (GameController.Instance.posToEntity.TryGetValue(newPos, out overlapEntities))
+        if (GameData.Instance.posToEntity.TryGetValue(newPos, out overlapEntities))
         {
             //先检测能不能到达
             //重叠元素中有Stop 不可到达
@@ -45,7 +45,7 @@ public class MoveSystem : ReactiveSystem
             //重叠元素中有Win 则胜利
             if (hasWin(overlapEntities))
             {
-                GameController.Instance.Win();
+                GameData.Instance.Win();
                 return;
             }
             //尝试推 
@@ -53,18 +53,18 @@ public class MoveSystem : ReactiveSystem
             movePush(e, new Vector2(e.Get<InputComp>().horizontal, e.Get<InputComp>().vertical), overlapEntities);
             //移动到新的位置
             //修改两个格子的映射信息
-            //GameController.Instance.posToEntity[e.Get<PosComp>().value].Remove(e);
+            //GameData.Instance.posToEntity[e.Get<PosComp>().value].Remove(e);
             e.Modify<PosComp>().SetValue(newPos);
-            //GameController.Instance.posToEntity[e.Get<PosComp>().value].Add(e);
+            //GameData.Instance.posToEntity[e.Get<PosComp>().value].Add(e);
         }
         //没有重叠
         else
         {
             //移动到新位置
             //修改格子映射信息
-            //GameController.Instance.posToEntity[e.Get<PosComp>().value].Remove(e);
+            //GameData.Instance.posToEntity[e.Get<PosComp>().value].Remove(e);
             e.Modify<PosComp>().SetValue(newPos);
-           // GameController.Instance.posToEntity[e.Get<PosComp>().value].Add(e);
+           // GameData.Instance.posToEntity[e.Get<PosComp>().value].Add(e);
         }
     }
     private bool hasStop(List<Entity> list)

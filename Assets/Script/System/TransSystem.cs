@@ -35,7 +35,7 @@ public class TransSystem : IExecuteSystem
         {
             var p1 = pos.value + offsetPos1[i];
             var p2 = pos.value + offsetPos2[i];
-            if (GameController.Instance.posToEntity.TryGetValue(p1, out var es1) && GameController.Instance.posToEntity.TryGetValue(p2, out var es2))
+            if (GameData.Instance.posToEntity.TryGetValue(p1, out var es1) && GameData.Instance.posToEntity.TryGetValue(p2, out var es2))
             {
                 if (IsTrans(es1, es2, out var e))
                 {

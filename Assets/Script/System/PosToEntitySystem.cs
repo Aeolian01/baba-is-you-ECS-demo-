@@ -8,7 +8,7 @@ public class PosToEntitySystem : IExecuteSystem
     public void Execute()
     {
         var _group = Context<Default>.AllOf<PosComp>();
-        var dic = GameController.Instance.posToEntity;
+        var dic = GameData.Instance.posToEntity;
         dic.Clear();
         foreach(var e in _group)
         {
