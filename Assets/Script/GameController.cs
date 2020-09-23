@@ -25,18 +25,44 @@ public class GameController : Singleton<GameController>
 #if UNITY_EDITOR
         ContextObserverHelper.ObserveAll(contexts);
 #endif
-        //var Entity = Contexts.Default.CreateEntity();
-        //Entity.Add<PosComp>();
-        //Entity.Add<ObjectComp>().SetValue(Name.Objects.Baba);
-        //Entity.Add<PropertyComp>().SetValue(Name.Properties.You);
+        var Entity = Contexts.Default.CreateEntity();
+        Entity.Add<PosComp>().SetValue(new Vector2(5, 5));
+        Entity.Add<ObjectComp>().SetValue(Name.Objects.Baba);
+        Entity.Add<PropertyComp>().SetValue(Name.Properties.You);
 
-        //for (int i = 0; i < 4; i++)
-        //{
-        //    var t = Contexts.Default.CreateEntity();
-        //    t.Add<PosComp>();
-        //    Entity.Add<ObjectComp>().SetValue(Name.Objects.Wall);
-        //    Entity.Add<PropertyComp>().SetValue(Name.Properties.Stop);
-        //}
+        for (int i = 0; i < 4; i++)
+        {
+            var t = Contexts.Default.CreateEntity();
+            t.Add<PosComp>().SetValue(new Vector2(0, i));
+            t.Add<ObjectComp>().SetValue(Name.Objects.Wall);
+            t.Add<PropertyComp>().SetValue(Name.Properties.Stop);
+        }
+        #region 测试代码
+        var t1 = Contexts.Default.CreateEntity();
+        t1.Add<PosComp>().SetValue(new Vector2(5, 1));
+        t1.Add<ObjectWordsComp>().SetValue(Name.ObjectWords.WallWord);
+        var t2 = Contexts.Default.CreateEntity();
+        t2.Add<PosComp>().SetValue(new Vector2(5, 2));
+        t2.Add<IsWordComp>();
+        var t3 = Contexts.Default.CreateEntity();
+        t3.Add<PosComp>().SetValue(new Vector2(5, 3));
+        t3.Add<ObjectWordsComp>().SetValue(Name.ObjectWords.RockWord);
+
+
+
+        var t5 = Contexts.Default.CreateEntity();
+        t5.Add<PosComp>().SetValue(new Vector2(5, 4));
+        t5.Add<IsWordComp>();
+        var t6 = Contexts.Default.CreateEntity();
+        t6.Add<PosComp>().SetValue(new Vector2(5, 5));
+        t6.Add<ProperWordsComp>().SetValue(Name.ProperWords.WinWord);
+
+        posToEntity[t2.Get<PosComp>().value] = new List<Entity> { t2 };
+        posToEntity[t3.Get<PosComp>().value] = new List<Entity> { t3 };
+
+        posToEntity[t5.Get<PosComp>().value] = new List<Entity> { t5 };
+        posToEntity[t6.Get<PosComp>().value] = new List<Entity> { t6 };
+        #endregion
 
 #if UNITY_EDITOR
         _gameSystem = FeatureObserverHelper.CreateFeature(null);

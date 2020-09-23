@@ -1,4 +1,5 @@
 ﻿using Entitas;
+using System;
 
 public static class Name
 {
@@ -62,14 +63,46 @@ public static class Name
     }
     public static Properties PwordToP(ProperWords word)
     {
+        var w = word.ToString();
+        foreach (int p in Enum.GetValues(typeof(Properties)))
+        {
+            string strName = Enum.GetName(typeof(Properties), p);
+            if (w.Contains(strName))
+                return (Properties)p;
+        }
         return (Properties)word;
     }
     public static Objects OwordToO(ObjectWords word)
     {
+        var w = word.ToString();
+        foreach (int p in Enum.GetValues(typeof(Objects)))
+        {
+            string strName = Enum.GetName(typeof(Objects), p);
+            if (w.Contains(strName))
+                return (Objects)p;
+        }
         return (Objects)word;
     }
-    public static SpriteName OwordToSName(ObjectWords word)
+    public static SpriteName OToSName(ObjectWords word)
     {
+        var w = OwordToO(word).ToString();
+        foreach (int p in Enum.GetValues(typeof(SpriteName)))
+        {
+            string strName = Enum.GetName(typeof(SpriteName), p);
+            if (w.Equals(strName))
+                return (SpriteName)p;
+        }
+        return (SpriteName)word;
+    }
+    public static SpriteName OToSName(Objects word)
+    {
+        var w = word.ToString();
+        foreach (int p in Enum.GetValues(typeof(SpriteName)))
+        {
+            string strName = Enum.GetName(typeof(SpriteName), p);
+            if (w.Equals(strName))
+                return (SpriteName)p;
+        }
         return (SpriteName)word;
     }
 }
