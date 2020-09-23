@@ -78,6 +78,7 @@ public class GameController: MonoBehaviour
 #endif
         GameSystem.Initialize();
         TransHelper.Instance.Trans();
+        GameData.Instance.ReFreshDic();
     }
 
     public void Update()

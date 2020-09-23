@@ -13,9 +13,6 @@ public class TransHelper
     List<Vector2> offsetPos2 = new List<Vector2> { new Vector2(2, 0), new Vector2(0, 2) };
     public void Trans(List<Entity> es=null)
     {
-        if (es != null) { 
-            Debug.Log("list length:" + es.Count);
-        }
         var _group = Context<Default>.AllOf<ObjectWordsComp, PosComp>();
         List<Entity> entities = new List<Entity>();
         entities.AddRange(_group);
