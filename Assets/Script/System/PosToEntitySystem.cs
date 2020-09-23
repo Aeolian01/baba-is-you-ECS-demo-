@@ -1,4 +1,5 @@
 ﻿using Entitas;
+using Entitas.VisualDebugging.Unity;
 using System;
 using System.Collections.Generic;
 
@@ -10,7 +11,7 @@ public class PosToEntitySystem : IExecuteSystem
         var _group = Context<Default>.AllOf<PosComp>();
         var dic = GameData.Instance.posToEntity;
         dic.Clear();
-        foreach(var e in _group)
+        foreach (var e in _group)
         {
             var pos = e.Get<PosComp>().value;
 #if UNITY_EDITOR
@@ -18,9 +19,22 @@ public class PosToEntitySystem : IExecuteSystem
             e.name = s[0] + $"({(int)pos.x},{(int)pos.y})";
 #endif
             List<Entity> entitys;
-            if (dic.TryGetValue(pos,out entitys)&&entitys!=null)
+            if (dic.TryGetValue(pos, out entitys) && entitys != null)
             {
-                entitys.Add(e);
+                bool f = false;
+                foreach (var t in entitys)
+                {
+                    if (t.Has<ObjectComp>() && e.Has<ObjectComp>())
+                        if (t.Get<ObjectComp>().name == e.Get<ObjectComp>().name)
+                            f = !f;
+                }
+                if (!f)
+                    entitys.Add(e);
+                else
+                {
+                    GameData.Instance.gos[e].DestroyGameObject();
+                    e.Destroy();
+                }
             }
             else
             {

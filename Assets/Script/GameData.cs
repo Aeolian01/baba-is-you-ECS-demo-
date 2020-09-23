@@ -9,6 +9,7 @@ public class GameData
     private static GameData _instance;
     public static GameData Instance => _instance ?? (_instance = new GameData());
 
+    public static float Timer = 0;
 
     public Transform Map = GameObject.Find("Map").transform;
     public const int DetlaSize = 25;

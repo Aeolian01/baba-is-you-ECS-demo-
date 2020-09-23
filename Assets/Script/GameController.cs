@@ -1,6 +1,7 @@
 ﻿using Entitas;
 using Entitas.VisualDebugging.Unity;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -79,6 +80,7 @@ public class GameController: MonoBehaviour
 
     public void Update()
     {
+        GameData.Timer += Time.deltaTime;
         _gameSystem.Execute();
         _gameSystem.Cleanup();
     }
