@@ -38,6 +38,7 @@ public class GameData
                 entity.Add<SpriteComp>().SetValue(Name.SpriteName.Empty);
                 entity.Add<ObjectComp>().SetValue(Name.Objects.Empty);
                 entity.Add<PosComp>().SetValue(new Vector2(i, j));
+                //边界
                 if (j == 0 || j == MapReader.mapWidth - 1 || i == MapReader.mapHeight - 1 || i == 0)
                 {
                     entity.Add<PropertyComp>().SetValue(Name.Properties.Stop);
@@ -352,6 +353,7 @@ public class GameData
                     {
                         Debug.LogError("entity can not find gameobject: ");
                     }
+                    go.transform.position = new Vector2(DetlaSize * (e.Get<PosComp>().value.y + 1), DetlaSize * (e.Get<PosComp>().value.x + 1));
                     Sprite sprite;
                     if (sprites.TryGetValue(e.Get<SpriteComp>().name, out sprite))
                     {

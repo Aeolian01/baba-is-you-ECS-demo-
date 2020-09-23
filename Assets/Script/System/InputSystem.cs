@@ -13,15 +13,15 @@ public class InputSystem : IExecuteSystem
         {
             if (!e.Has<InputComp>())
                 e.Add<InputComp>();
-            int h = (int)Input.GetAxisRaw("Horizontal");
-            int v = -(int)Input.GetAxisRaw("Vertical");
+            int y = (int)Input.GetAxisRaw("Horizontal");
+            int x = (int)Input.GetAxisRaw("Vertical");
             var input = e.Get<InputComp>();
-            if (input.horizontal == h && input.vertical == v)
+            if (input.x == x && input.y == y)
                 return;
-            if (h != 0)
-                e.Modify<InputComp>().SetValue(h, 0);
+            if (x != 0)
+                e.Modify<InputComp>().SetValue(x, 0);
             else
-                e.Modify<InputComp>().SetValue(0, v);
+                e.Modify<InputComp>().SetValue(0, y);
         }
     }
 }

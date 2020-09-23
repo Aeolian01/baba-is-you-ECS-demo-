@@ -9,8 +9,8 @@ public class MoveSystem : ReactiveSystem
 {
     public MoveSystem()
     {
-        monitors += Context<Default>.AllOf<PosComp, InputComp>().OnAdded(move).Where(e => !(e.Get<InputComp>().horizontal == 0 
-                                                                                       && e.Get<InputComp>().vertical == 0));
+        monitors += Context<Default>.AllOf<PosComp, InputComp>().OnAdded(move).Where(e => !(e.Get<InputComp>().x == 0 
+                                                                                       && e.Get<InputComp>().y == 0));
     }
 
     public void move(List<Entity> entities)
@@ -19,52 +19,53 @@ public class MoveSystem : ReactiveSystem
         foreach (var e in entities)
         {
             var input = e.Get<InputComp>();
-            Debug.Log($"horizontal:{input.horizontal} vertical:{input.vertical}");
-            var newPos = new Vector2(input.horizontal + e.Get<PosComp>().value.x, 
-                                     input.vertical + e.Get<PosComp>().value.y);
-            //move(e, newPos);
+            Debug.Log($"dir:({input.x},{input.y})");
+            Debug.Log($"pos:({e.Get<PosComp>().value.x},{e.Get<PosComp>().value.y})");
+            var newPos = new Vector2(input.x + e.Get<PosComp>().value.x, 
+                                     input.y + e.Get<PosComp>().value.y);
+            move(e, newPos,new Vector2(input.x,input.y));
         }
     }
-    private void move(Entity e, Vector2 newPos)
+    private bool move(Entity e, Vector2 newPos,Vector2 dir)
     {
         //在新的位置查看是否与stop push win重合
         List<Entity> overlapEntities;
 
         if (GameData.Instance.posToEntity == null || GameData.Instance.posToEntity.Count == 0)
-            return;
+            return false;
 
         //有重叠
         if (GameData.Instance.posToEntity.TryGetValue(newPos, out overlapEntities))
         {
             //先检测能不能到达
             //重叠元素中有Stop 不可到达
-            if (hasStop(overlapEntities)) return;
+            if (hasStop(overlapEntities)) return false;
             //重叠元素有Edge 不可到达
-            if (hasEdge(overlapEntities)) return;
-            //然后检测赢了吗
-            //重叠元素中有Win 则胜利
-            if (hasWin(overlapEntities))
-            {
-                GameData.Instance.Win();
-                return;
-            }
-            //尝试推 
+            if (hasEdge(overlapEntities)) return false;
+
+            //然后检测赢了吗   移动之后再检测
+
+            //尝试推走重叠实体
             //递归
-            movePush(e, new Vector2(e.Get<InputComp>().horizontal, e.Get<InputComp>().vertical), overlapEntities);
-            //移动到新的位置
-            //修改两个格子的映射信息
-            //GameData.Instance.posToEntity[e.Get<PosComp>().value].Remove(e);
-            e.Modify<PosComp>().SetValue(newPos);
-            //GameData.Instance.posToEntity[e.Get<PosComp>().value].Add(e);
+            if (movePush(dir, overlapEntities))
+            {
+                //可以推走
+                //或者不用推
+
+                //移动到新的位置
+                e.Modify<PosComp>().SetValue(newPos);
+                return true;
+            }
+            else {
+                //推不走 那当前实体就过不去
+                return false;
+            }
         }
         //没有重叠
         else
         {
-            //移动到新位置
-            //修改格子映射信息
-            //GameData.Instance.posToEntity[e.Get<PosComp>().value].Remove(e);
             e.Modify<PosComp>().SetValue(newPos);
-           // GameData.Instance.posToEntity[e.Get<PosComp>().value].Add(e);
+            return true;
         }
     }
     private bool hasStop(List<Entity> list)
@@ -82,7 +83,7 @@ public class MoveSystem : ReactiveSystem
     {
         foreach (var entity in list)
         {
-            if (entity.Has<EdgeComp>())
+            if (entity.Has<SpriteComp>()&&entity.Get<SpriteComp>().name==Name.SpriteName.Edge)
             {
                 return true;
             }
@@ -100,17 +101,28 @@ public class MoveSystem : ReactiveSystem
         }
         return false;
     }
-    private void movePush(Entity e, Vector2 dir, List<Entity> list)
+    //尝试移动重叠的所有实体
+    private bool movePush(Vector2 dir, List<Entity> list)
     {
-        var nextPos = e.Get<PosComp>().value + dir;
-
         foreach (var entity in list)
         {
             if (entity.Has<PropertyComp>() && entity.Get<PropertyComp>().name == Name.Properties.Push)
             {
-                move(e, nextPos);
+                var nextPos = entity.Get<PosComp>().value + dir;
+                //这个需要push的实体能推走
+                if (move(entity, nextPos,dir))
+                {
+                    return true;
+                }
+                //这个实体推不走
+                else {
+                    return false;
+                }
             }
         }
+
+        //没有要push的实体
+        return true;
     }
 }
 
