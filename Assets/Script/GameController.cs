@@ -37,7 +37,8 @@ public class GameController : Singleton<GameController>
             t.Add<ObjectComp>().SetValue(Name.Objects.Wall);
             t.Add<PropertyComp>().SetValue(Name.Properties.Stop);
         }
-        #region 测试代码
+#if true
+#region 测试代码
         var t1 = Contexts.Default.CreateEntity();
         t1.Add<PosComp>().SetValue(new Vector2(5, 1));
         t1.Add<ObjectWordsComp>().SetValue(Name.ObjectWords.WallWord);
@@ -62,8 +63,8 @@ public class GameController : Singleton<GameController>
 
         posToEntity[t5.Get<PosComp>().value] = new List<Entity> { t5 };
         posToEntity[t6.Get<PosComp>().value] = new List<Entity> { t6 };
-        #endregion
-
+#endregion
+#endif
 #if UNITY_EDITOR
         _gameSystem = FeatureObserverHelper.CreateFeature(null);
 #else

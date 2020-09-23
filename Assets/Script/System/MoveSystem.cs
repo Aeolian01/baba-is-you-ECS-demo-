@@ -22,7 +22,7 @@ public class MoveSystem : ReactiveSystem
             Debug.Log($"horizontal:{input.horizontal} vertical:{input.vertical}");
             var newPos = new Vector2(input.horizontal + e.Get<PosComp>().value.x, 
                                      input.vertical + e.Get<PosComp>().value.y);
-            move(e, newPos);
+            //move(e, newPos);
         }
     }
     private void move(Entity e, Vector2 newPos)

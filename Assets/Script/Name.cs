@@ -60,6 +60,7 @@ public static class Name
         PushWord,
         StopWord,
     }
+
     public static Properties PwordToP(ProperWords word)
     {
         var w = word.ToString();
@@ -71,6 +72,7 @@ public static class Name
         }
         return (Properties)word;
     }
+
     public static Objects OwordToO(ObjectWords word)
     {
         var w = word.ToString();
@@ -82,6 +84,7 @@ public static class Name
         }
         return (Objects)word;
     }
+
     public static SpriteName OToSName(ObjectWords word)
     {
         var w = OwordToO(word).ToString();
@@ -93,6 +96,7 @@ public static class Name
         }
         return (SpriteName)word;
     }
+
     public static SpriteName OToSName(Objects word)
     {
         var w = word.ToString();
