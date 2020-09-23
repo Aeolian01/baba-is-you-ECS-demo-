@@ -13,6 +13,10 @@ public class PosToEntitySystem : IExecuteSystem
         foreach(var e in _group)
         {
             var pos = e.Get<PosComp>().value;
+#if UNITY_EDITOR
+            var s = e.name.Split(new char[] { '(' });
+            e.name = s[0] + $"({(int)pos.x},{(int)pos.y})";
+#endif
             List<Entity> entitys;
             if (dic.TryGetValue(pos,out entitys)&&entitys!=null)
             {

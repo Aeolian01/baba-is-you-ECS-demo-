@@ -91,6 +91,11 @@ public class TransSystem : IExecuteSystem
         e.Modify<ObjectComp>().SetValue(Name.OwordToO(objectWords));
         if (e.Has<SpriteComp>())
             e.Modify<SpriteComp>().SetValue(Name.OToSName(objectWords));
+#if UNITY_EDITOR
+        var pos = e.Get<PosComp>().value;
+        var s = e.name.Split(new char[] { '(' });
+        e.name = Name.OwordToO(objectWords).ToString() + $"({(int)pos.x},{(int)pos.y})";
+#endif
     }
     void Trans(Entity e, Name.ProperWords properWords)
     {

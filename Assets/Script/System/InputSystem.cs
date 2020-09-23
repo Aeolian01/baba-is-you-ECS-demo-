@@ -14,7 +14,7 @@ public class InputSystem : IExecuteSystem
             if (!e.Has<InputComp>())
                 e.Add<InputComp>();
             int h = (int)Input.GetAxisRaw("Horizontal");
-            int v = (int)Input.GetAxisRaw("Vertical");
+            int v = -(int)Input.GetAxisRaw("Vertical");
             var input = e.Get<InputComp>();
             if (input.horizontal == h && input.vertical == v)
                 return;

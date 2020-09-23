@@ -113,6 +113,9 @@ public class GameController : Singleton<GameController>
                 var unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
                 unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
                 var entity = Contexts.Default.CreateEntity();
+#if UNITY_EDITOR
+                entity.name = "Empty";
+#endif
                 entity.Add<SpriteComp>().SetValue(Name.SpriteName.Empty);
                 entity.Add<ObjectComp>().SetValue(Name.Objects.Empty);
                 entity.Add<PosComp>().SetValue(new Vector2(i, j));
@@ -129,7 +132,7 @@ public class GameController : Singleton<GameController>
                 }
                 else
                 {
-                    sprites.Add(entity.Get<SpriteComp>().name, Resources.Load<Sprite>("Sprites/"+ entity.Get<SpriteComp>().name.ToString()));
+                    sprites.Add(entity.Get<SpriteComp>().name, Resources.Load<Sprite>("Sprites/" + entity.Get<SpriteComp>().name.ToString()));
                     unit.GetComponent<Image>().sprite = sprites[entity.Get<SpriteComp>().name];
                 }
                 posToEntity.Add(new Vector2(i, j), new List<Entity>() { entity });
@@ -141,13 +144,18 @@ public class GameController : Singleton<GameController>
         {
             for (int j = 0; j < MapReader.mapWidth; j++)
             {
+                if ((Name.SpriteName)MapReader.map[i, j] == Name.SpriteName.Empty)
+                    continue;
                 var pos = new Vector2(DetlaSize * (j + 1), DetlaSize * (i + 1));
+                var entity = Contexts.Default.CreateEntity();
+#if UNITY_EDITOR
+                entity.name = ((Name.SpriteName)MapReader.map[i, j]).ToString() + $"({i},{j})";
+#endif
                 switch (MapReader.map[i, j])
                 {
                     case (int)Name.SpriteName.Wall:
                         var unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
                         unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
-                        var entity = Contexts.Default.CreateEntity();
                         entity.Add<ObjectComp>().SetValue(Name.Objects.Wall);
                         entity.Add<SpriteComp>().SetValue(Name.SpriteName.Wall);
                         entity.Add<PosComp>().SetValue(new Vector2(i, j));
@@ -168,7 +176,6 @@ public class GameController : Singleton<GameController>
                     case (int)Name.SpriteName.Baba:
                         unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
                         unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
-                        entity = Contexts.Default.CreateEntity();
                         entity.Add<ObjectComp>().SetValue(Name.Objects.Baba);
                         entity.Add<SpriteComp>().SetValue(Name.SpriteName.Baba);
                         entity.Add<PosComp>().SetValue(new Vector2(i, j));
@@ -188,7 +195,6 @@ public class GameController : Singleton<GameController>
                     case (int)Name.SpriteName.Flag:
                         unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
                         unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
-                        entity = Contexts.Default.CreateEntity();
                         entity.Add<ObjectComp>().SetValue(Name.Objects.Flag);
                         entity.Add<SpriteComp>().SetValue(Name.SpriteName.Flag);
                         entity.Add<PosComp>().SetValue(new Vector2(i, j));
@@ -208,7 +214,6 @@ public class GameController : Singleton<GameController>
                     case (int)Name.SpriteName.Rock:
                         unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
                         unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
-                        entity = Contexts.Default.CreateEntity();
                         entity.Add<ObjectComp>().SetValue(Name.Objects.Rock);
                         entity.Add<SpriteComp>().SetValue(Name.SpriteName.Rock);
                         entity.Add<PosComp>().SetValue(new Vector2(i, j));
@@ -228,7 +233,6 @@ public class GameController : Singleton<GameController>
                     case (int)Name.SpriteName.WallWord:
                         unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
                         unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
-                        entity = Contexts.Default.CreateEntity();
                         entity.Add<ObjectWordsComp>().SetValue(Name.ObjectWords.WallWord);
                         entity.Add<SpriteComp>().SetValue(Name.SpriteName.WallWord);
                         entity.Add<PosComp>().SetValue(new Vector2(i, j));
@@ -249,7 +253,6 @@ public class GameController : Singleton<GameController>
                     case (int)Name.SpriteName.BabaWord:
                         unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
                         unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
-                        entity = Contexts.Default.CreateEntity();
                         entity.Add<ObjectWordsComp>().SetValue(Name.ObjectWords.BabaWord);
                         entity.Add<SpriteComp>().SetValue(Name.SpriteName.BabaWord);
                         entity.Add<PosComp>().SetValue(new Vector2(i, j));
@@ -270,7 +273,6 @@ public class GameController : Singleton<GameController>
                     case (int)Name.SpriteName.FlagWord:
                         unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
                         unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
-                        entity = Contexts.Default.CreateEntity();
                         entity.Add<ObjectWordsComp>().SetValue(Name.ObjectWords.FlagWord);
                         entity.Add<SpriteComp>().SetValue(Name.SpriteName.FlagWord);
                         entity.Add<PosComp>().SetValue(new Vector2(i, j));
@@ -291,7 +293,6 @@ public class GameController : Singleton<GameController>
                     case (int)Name.SpriteName.RockWord:
                         unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
                         unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
-                        entity = Contexts.Default.CreateEntity();
                         entity.Add<ObjectWordsComp>().SetValue(Name.ObjectWords.RockWord);
                         entity.Add<SpriteComp>().SetValue(Name.SpriteName.RockWord);
                         entity.Add<PosComp>().SetValue(new Vector2(i, j));
@@ -312,7 +313,6 @@ public class GameController : Singleton<GameController>
                     case (int)Name.SpriteName.IsWord:
                         unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
                         unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
-                        entity = Contexts.Default.CreateEntity();
                         entity.Add<IsWordComp>();
                         entity.Add<SpriteComp>().SetValue(Name.SpriteName.IsWord);
                         entity.Add<PosComp>().SetValue(new Vector2(i, j));
@@ -333,7 +333,6 @@ public class GameController : Singleton<GameController>
                     case (int)Name.SpriteName.WinWord:
                         unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
                         unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
-                        entity = Contexts.Default.CreateEntity();
                         entity.Add<ProperWordsComp>().SetValue(Name.ProperWords.WinWord);
                         entity.Add<SpriteComp>().SetValue(Name.SpriteName.WinWord);
                         entity.Add<PosComp>().SetValue(new Vector2(i, j));
@@ -354,7 +353,6 @@ public class GameController : Singleton<GameController>
                     case (int)Name.SpriteName.YouWord:
                         unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
                         unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
-                        entity = Contexts.Default.CreateEntity();
                         entity.Add<ProperWordsComp>().SetValue(Name.ProperWords.YouWord);
                         entity.Add<SpriteComp>().SetValue(Name.SpriteName.YouWord);
                         entity.Add<PosComp>().SetValue(new Vector2(i, j));
@@ -375,7 +373,6 @@ public class GameController : Singleton<GameController>
                     case (int)Name.SpriteName.PushWord:
                         unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
                         unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
-                        entity = Contexts.Default.CreateEntity();
                         entity.Add<ProperWordsComp>().SetValue(Name.ProperWords.PushWord);
                         entity.Add<SpriteComp>().SetValue(Name.SpriteName.PushWord);
                         entity.Add<PosComp>().SetValue(new Vector2(i, j));
@@ -396,7 +393,6 @@ public class GameController : Singleton<GameController>
                     case (int)Name.SpriteName.StopWord:
                         unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
                         unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
-                        entity = Contexts.Default.CreateEntity();
                         entity.Add<ProperWordsComp>().SetValue(Name.ProperWords.StopWord);
                         entity.Add<SpriteComp>().SetValue(Name.SpriteName.StopWord);
                         entity.Add<PosComp>().SetValue(new Vector2(i, j));
@@ -430,7 +426,8 @@ public class GameController : Singleton<GameController>
                 foreach (var e in entities)
                 {
                     GameObject go;
-                    if (!gos.TryGetValue(e, out go)) {
+                    if (!gos.TryGetValue(e, out go))
+                    {
                         Debug.LogError("entity can not find gameobject: ");
                     }
                     Sprite sprite;
