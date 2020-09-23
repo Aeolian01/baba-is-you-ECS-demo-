@@ -9,6 +9,7 @@ public class GameController : Singleton<GameController>
 {
     private Systems _gameSystem;
     public Transform Map;
+    public const int DetlaSize = 25;
 
     //spriteName -- Sprite
     public Dictionary<Name.SpriteName, Sprite> sprites = new Dictionary<Name.SpriteName, Sprite>();
@@ -20,11 +21,15 @@ public class GameController : Singleton<GameController>
     public void Start()
     {
         var contexts = Contexts.sharedInstance;
-        LoadLevel(1);
+
 
 #if UNITY_EDITOR
         ContextObserverHelper.ObserveAll(contexts);
 #endif
+        LoadLevel(1);
+
+        #region 测试代码
+#if false
         var Entity = Contexts.Default.CreateEntity();
         Entity.Add<PosComp>().SetValue(new Vector2(5, 5));
         Entity.Add<ObjectComp>().SetValue(Name.Objects.Baba);
@@ -37,8 +42,9 @@ public class GameController : Singleton<GameController>
             t.Add<ObjectComp>().SetValue(Name.Objects.Wall);
             t.Add<PropertyComp>().SetValue(Name.Properties.Stop);
         }
-#if true
-#region 测试代码
+
+
+
         var t1 = Contexts.Default.CreateEntity();
         t1.Add<PosComp>().SetValue(new Vector2(5, 1));
         t1.Add<ObjectWordsComp>().SetValue(Name.ObjectWords.WallWord);
@@ -63,8 +69,11 @@ public class GameController : Singleton<GameController>
 
         posToEntity[t5.Get<PosComp>().value] = new List<Entity> { t5 };
         posToEntity[t6.Get<PosComp>().value] = new List<Entity> { t6 };
-#endregion
 #endif
+        #endregion
+
+
+
 #if UNITY_EDITOR
         _gameSystem = FeatureObserverHelper.CreateFeature(null);
 #else
@@ -94,22 +103,23 @@ public class GameController : Singleton<GameController>
     {
         MapReader.Instance.ReadFile(id);
         //地板
-        for (int i = MapReader.mapHeight - 1; i >=0; i--)
+        for (int i = MapReader.mapHeight - 1; i >= 0; i--)
         {
-            for (int j = 0; j <MapReader.mapWidth; j++)
+            for (int j = 0; j < MapReader.mapWidth; j++)
             {
-                var pos = new Vector2(j + 25f * (j + 1), i + 25f * (i + 1));
+                var pos = new Vector2(DetlaSize * (j + 1), DetlaSize * (i + 1));
                 var unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
-                unit.GetComponent<RectTransform>().sizeDelta = new Vector2(25, 25);
+                unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
                 var entity = Contexts.Default.CreateEntity();
                 entity.Add<SpriteComp>().SetValue(Name.SpriteName.Empty);
                 entity.Add<ObjectComp>().SetValue(Name.Objects.Empty);
-                entity.Add<PosComp>().SetValue(new Vector2(i,j));
-                if (j == 0 || j == MapReader.mapWidth-1 || i == MapReader.mapHeight-1 || i == 0) {
+                entity.Add<PosComp>().SetValue(new Vector2(i, j));
+                if (j == 0 || j == MapReader.mapWidth - 1 || i == MapReader.mapHeight - 1 || i == 0)
+                {
                     entity.Add<PropertyComp>().SetValue(Name.Properties.Stop);
-                    entity.Modify<SpriteComp>().SetValue(Name.SpriteName.Edge);
+                    entity.Add<SpriteComp>().SetValue(Name.SpriteName.Edge);
                 }
-                unit.Link(entity, Contexts.Default);
+                //unit.Link(entity, Contexts.Default);
                 Sprite sprite;
                 if (sprites.TryGetValue(Name.SpriteName.Empty, out sprite))
                 {
@@ -129,17 +139,17 @@ public class GameController : Singleton<GameController>
         {
             for (int j = 0; j < MapReader.mapWidth; j++)
             {
-                var pos = new Vector2(j + 25f * (j + 1), i + 25f * (i + 1));
+                var pos = new Vector2(DetlaSize * (j + 1), DetlaSize * (i + 1));
                 switch (MapReader.map[i, j])
                 {
                     case (int)Name.SpriteName.Wall:
                         var unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
-                        unit.GetComponent<RectTransform>().sizeDelta = new Vector2(25, 25);
+                        unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
                         var entity = Contexts.Default.CreateEntity();
                         entity.Add<ObjectComp>().SetValue(Name.Objects.Wall);
                         entity.Add<SpriteComp>().SetValue(Name.SpriteName.Wall);
                         entity.Add<PosComp>().SetValue(new Vector2(i, j));
-                        unit.Link(entity, Contexts.Default);
+                        //unit.Link(entity, Contexts.Default);
                         Sprite sprite;
                         if (sprites.TryGetValue(Name.SpriteName.Wall, out sprite))
                         {
@@ -155,12 +165,12 @@ public class GameController : Singleton<GameController>
                         break;
                     case (int)Name.SpriteName.Baba:
                         unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
-                        unit.GetComponent<RectTransform>().sizeDelta = new Vector2(25, 25);
+                        unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
                         entity = Contexts.Default.CreateEntity();
                         entity.Add<ObjectComp>().SetValue(Name.Objects.Baba);
                         entity.Add<SpriteComp>().SetValue(Name.SpriteName.Baba);
                         entity.Add<PosComp>().SetValue(new Vector2(i, j));
-                        unit.Link(entity, Contexts.Default);
+                        //unit.Link(entity, Contexts.Default);
                         if (sprites.TryGetValue(Name.SpriteName.Baba, out sprite))
                         {
                             unit.GetComponent<Image>().sprite = sprite;
@@ -175,12 +185,12 @@ public class GameController : Singleton<GameController>
                         break;
                     case (int)Name.SpriteName.Flag:
                         unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
-                        unit.GetComponent<RectTransform>().sizeDelta = new Vector2(25, 25);
+                        unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
                         entity = Contexts.Default.CreateEntity();
                         entity.Add<ObjectComp>().SetValue(Name.Objects.Flag);
                         entity.Add<SpriteComp>().SetValue(Name.SpriteName.Flag);
                         entity.Add<PosComp>().SetValue(new Vector2(i, j));
-                        unit.Link(entity, Contexts.Default);
+                        //unit.Link(entity, Contexts.Default);
                         if (sprites.TryGetValue(Name.SpriteName.Flag, out sprite))
                         {
                             unit.GetComponent<Image>().sprite = sprite;
@@ -195,12 +205,12 @@ public class GameController : Singleton<GameController>
                         break;
                     case (int)Name.SpriteName.Rock:
                         unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
-                        unit.GetComponent<RectTransform>().sizeDelta = new Vector2(25, 25);
+                        unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
                         entity = Contexts.Default.CreateEntity();
                         entity.Add<ObjectComp>().SetValue(Name.Objects.Rock);
                         entity.Add<SpriteComp>().SetValue(Name.SpriteName.Rock);
                         entity.Add<PosComp>().SetValue(new Vector2(i, j));
-                        unit.Link(entity, Contexts.Default);
+                        //unit.Link(entity, Contexts.Default);
                         if (sprites.TryGetValue(Name.SpriteName.Rock, out sprite))
                         {
                             unit.GetComponent<Image>().sprite = sprite;
@@ -215,13 +225,13 @@ public class GameController : Singleton<GameController>
                         break;
                     case (int)Name.SpriteName.WallWord:
                         unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
-                        unit.GetComponent<RectTransform>().sizeDelta = new Vector2(25, 25);
+                        unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
                         entity = Contexts.Default.CreateEntity();
                         entity.Add<ObjectWordsComp>().SetValue(Name.ObjectWords.WallWord);
                         entity.Add<SpriteComp>().SetValue(Name.SpriteName.WallWord);
                         entity.Add<PosComp>().SetValue(new Vector2(i, j));
                         entity.Add<PropertyComp>().SetValue(Name.Properties.Push);
-                        unit.Link(entity, Contexts.Default);
+                        //unit.Link(entity, Contexts.Default);
                         if (sprites.TryGetValue(Name.SpriteName.WallWord, out sprite))
                         {
                             unit.GetComponent<Image>().sprite = sprite;
@@ -236,13 +246,13 @@ public class GameController : Singleton<GameController>
                         break;
                     case (int)Name.SpriteName.BabaWord:
                         unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
-                        unit.GetComponent<RectTransform>().sizeDelta = new Vector2(25, 25);
+                        unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
                         entity = Contexts.Default.CreateEntity();
                         entity.Add<ObjectWordsComp>().SetValue(Name.ObjectWords.BabaWord);
                         entity.Add<SpriteComp>().SetValue(Name.SpriteName.BabaWord);
                         entity.Add<PosComp>().SetValue(new Vector2(i, j));
                         entity.Add<PropertyComp>().SetValue(Name.Properties.Push);
-                        unit.Link(entity, Contexts.Default);
+                        //unit.Link(entity, Contexts.Default);
                         if (sprites.TryGetValue(Name.SpriteName.BabaWord, out sprite))
                         {
                             unit.GetComponent<Image>().sprite = sprite;
@@ -257,13 +267,13 @@ public class GameController : Singleton<GameController>
                         break;
                     case (int)Name.SpriteName.FlagWord:
                         unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
-                        unit.GetComponent<RectTransform>().sizeDelta = new Vector2(25, 25);
+                        unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
                         entity = Contexts.Default.CreateEntity();
                         entity.Add<ObjectWordsComp>().SetValue(Name.ObjectWords.FlagWord);
                         entity.Add<SpriteComp>().SetValue(Name.SpriteName.FlagWord);
                         entity.Add<PosComp>().SetValue(new Vector2(i, j));
                         entity.Add<PropertyComp>().SetValue(Name.Properties.Push);
-                        unit.Link(entity, Contexts.Default);
+                        //unit.Link(entity, Contexts.Default);
                         if (sprites.TryGetValue(Name.SpriteName.FlagWord, out sprite))
                         {
                             unit.GetComponent<Image>().sprite = sprite;
@@ -278,13 +288,13 @@ public class GameController : Singleton<GameController>
                         break;
                     case (int)Name.SpriteName.RockWord:
                         unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
-                        unit.GetComponent<RectTransform>().sizeDelta = new Vector2(25, 25);
+                        unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
                         entity = Contexts.Default.CreateEntity();
                         entity.Add<ObjectWordsComp>().SetValue(Name.ObjectWords.RockWord);
                         entity.Add<SpriteComp>().SetValue(Name.SpriteName.RockWord);
                         entity.Add<PosComp>().SetValue(new Vector2(i, j));
                         entity.Add<PropertyComp>().SetValue(Name.Properties.Push);
-                        unit.Link(entity, Contexts.Default);
+                        //unit.Link(entity, Contexts.Default);
                         if (sprites.TryGetValue(Name.SpriteName.RockWord, out sprite))
                         {
                             unit.GetComponent<Image>().sprite = sprite;
@@ -299,13 +309,13 @@ public class GameController : Singleton<GameController>
                         break;
                     case (int)Name.SpriteName.IsWord:
                         unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
-                        unit.GetComponent<RectTransform>().sizeDelta = new Vector2(25, 25);
+                        unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
                         entity = Contexts.Default.CreateEntity();
                         entity.Add<IsWordComp>();
                         entity.Add<SpriteComp>().SetValue(Name.SpriteName.IsWord);
                         entity.Add<PosComp>().SetValue(new Vector2(i, j));
                         entity.Add<PropertyComp>().SetValue(Name.Properties.Push);
-                        unit.Link(entity, Contexts.Default);
+                        //unit.Link(entity, Contexts.Default);
                         if (sprites.TryGetValue(Name.SpriteName.IsWord, out sprite))
                         {
                             unit.GetComponent<Image>().sprite = sprite;
@@ -320,13 +330,13 @@ public class GameController : Singleton<GameController>
                         break;
                     case (int)Name.SpriteName.WinWord:
                         unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
-                        unit.GetComponent<RectTransform>().sizeDelta = new Vector2(25, 25);
+                        unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
                         entity = Contexts.Default.CreateEntity();
                         entity.Add<ProperWordsComp>().SetValue(Name.ProperWords.WinWord);
                         entity.Add<SpriteComp>().SetValue(Name.SpriteName.WinWord);
                         entity.Add<PosComp>().SetValue(new Vector2(i, j));
                         entity.Add<PropertyComp>().SetValue(Name.Properties.Push);
-                        unit.Link(entity, Contexts.Default);
+                        //unit.Link(entity, Contexts.Default);
                         if (sprites.TryGetValue(Name.SpriteName.WinWord, out sprite))
                         {
                             unit.GetComponent<Image>().sprite = sprite;
@@ -341,13 +351,13 @@ public class GameController : Singleton<GameController>
                         break;
                     case (int)Name.SpriteName.YouWord:
                         unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
-                        unit.GetComponent<RectTransform>().sizeDelta = new Vector2(25, 25);
+                        unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
                         entity = Contexts.Default.CreateEntity();
                         entity.Add<ProperWordsComp>().SetValue(Name.ProperWords.YouWord);
                         entity.Add<SpriteComp>().SetValue(Name.SpriteName.YouWord);
                         entity.Add<PosComp>().SetValue(new Vector2(i, j));
                         entity.Add<PropertyComp>().SetValue(Name.Properties.Push);
-                        unit.Link(entity, Contexts.Default);
+                        //unit.Link(entity, Contexts.Default);
                         if (sprites.TryGetValue(Name.SpriteName.YouWord, out sprite))
                         {
                             unit.GetComponent<Image>().sprite = sprite;
@@ -362,13 +372,13 @@ public class GameController : Singleton<GameController>
                         break;
                     case (int)Name.SpriteName.PushWord:
                         unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
-                        unit.GetComponent<RectTransform>().sizeDelta = new Vector2(25, 25);
+                        unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
                         entity = Contexts.Default.CreateEntity();
                         entity.Add<ProperWordsComp>().SetValue(Name.ProperWords.PushWord);
                         entity.Add<SpriteComp>().SetValue(Name.SpriteName.PushWord);
                         entity.Add<PosComp>().SetValue(new Vector2(i, j));
                         entity.Add<PropertyComp>().SetValue(Name.Properties.Push);
-                        unit.Link(entity, Contexts.Default);
+                        //unit.Link(entity, Contexts.Default);
                         if (sprites.TryGetValue(Name.SpriteName.PushWord, out sprite))
                         {
                             unit.GetComponent<Image>().sprite = sprite;
@@ -383,13 +393,13 @@ public class GameController : Singleton<GameController>
                         break;
                     case (int)Name.SpriteName.StopWord:
                         unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
-                        unit.GetComponent<RectTransform>().sizeDelta = new Vector2(25, 25);
+                        unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
                         entity = Contexts.Default.CreateEntity();
                         entity.Add<ProperWordsComp>().SetValue(Name.ProperWords.StopWord);
                         entity.Add<SpriteComp>().SetValue(Name.SpriteName.StopWord);
                         entity.Add<PosComp>().SetValue(new Vector2(i, j));
                         entity.Add<PropertyComp>().SetValue(Name.Properties.Push);
-                        unit.Link(entity, Contexts.Default);
+                        //unit.Link(entity, Contexts.Default);
                         if (sprites.TryGetValue(Name.SpriteName.StopWord, out sprite))
                         {
                             unit.GetComponent<Image>().sprite = sprite;
@@ -408,18 +418,23 @@ public class GameController : Singleton<GameController>
 
     }
     //刷新地图显示
-    public void UpdateMap() {
-        for (int i = 0; i < MapReader.mapWidth; i++) {
-            for (int j = 0; j < MapReader.mapHeight; j++) {
+    public void UpdateMap()
+    {
+        for (int i = 0; i < MapReader.mapWidth; i++)
+        {
+            for (int j = 0; j < MapReader.mapHeight; j++)
+            {
                 var entities = posToEntity[new Vector2(i, j)];
-                foreach (var e in entities) {
+                foreach (var e in entities)
+                {
                     var go = gos[e];
                     Sprite sprite;
                     if (sprites.TryGetValue(e.Get<SpriteComp>().name, out sprite))
                     {
                         go.GetComponent<Image>().sprite = sprite;
                     }
-                    else {
+                    else
+                    {
                         Debug.LogError("sprite not found: " + e.Get<SpriteComp>().name);
                     }
                 }
