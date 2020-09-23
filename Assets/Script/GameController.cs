@@ -1,6 +1,7 @@
 ﻿using Entitas;
 using Entitas.Unity;
 using Entitas.VisualDebugging.Unity;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,6 +22,7 @@ public class GameController : Singleton<GameController>
     {
         var contexts = Contexts.sharedInstance;
         LoadLevel(1);
+        Debug.Log(sprites[posToEntity[new Vector2(0, 0)][0].Get<SpriteComp>().name]);
 
 #if UNITY_EDITOR
         ContextObserverHelper.ObserveAll(contexts);
@@ -111,14 +113,14 @@ public class GameController : Singleton<GameController>
                 }
                 unit.Link(entity, Contexts.Default);
                 Sprite sprite;
-                if (sprites.TryGetValue(Name.SpriteName.Empty, out sprite))
+                if (sprites.TryGetValue(entity.Get<SpriteComp>().name, out sprite))
                 {
                     unit.GetComponent<Image>().sprite = sprite;
                 }
                 else
                 {
-                    sprites.Add(Name.SpriteName.Empty, Resources.Load<Sprite>("Sprites/Empty"));
-                    unit.GetComponent<Image>().sprite = sprites[Name.SpriteName.Empty];
+                    sprites.Add(entity.Get<SpriteComp>().name, Resources.Load<Sprite>("Sprites/"+ entity.Get<SpriteComp>().name.ToString()));
+                    unit.GetComponent<Image>().sprite = sprites[entity.Get<SpriteComp>().name];
                 }
                 posToEntity.Add(new Vector2(i, j), new List<Entity>() { entity });
                 gos.Add(entity, unit);
@@ -409,11 +411,15 @@ public class GameController : Singleton<GameController>
     }
     //刷新地图显示
     public void UpdateMap() {
+        Debug.Log(sprites[posToEntity[new Vector2(0, 0)][0].Get<SpriteComp>().name]);
         for (int i = 0; i < MapReader.mapWidth; i++) {
             for (int j = 0; j < MapReader.mapHeight; j++) {
                 var entities = posToEntity[new Vector2(i, j)];
                 foreach (var e in entities) {
-                    var go = gos[e];
+                    GameObject go;
+                    if (!gos.TryGetValue(e, out go)) {
+                        Debug.LogError("entity can not find gameobject: ");
+                    }
                     Sprite sprite;
                     if (sprites.TryGetValue(e.Get<SpriteComp>().name, out sprite))
                     {
@@ -421,6 +427,7 @@ public class GameController : Singleton<GameController>
                     }
                     else {
                         Debug.LogError("sprite not found: " + e.Get<SpriteComp>().name);
+                        Debug.LogError($"pos:{i},{j}");
                     }
                 }
             }
