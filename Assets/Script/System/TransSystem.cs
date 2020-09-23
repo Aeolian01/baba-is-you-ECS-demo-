@@ -22,7 +22,7 @@ public class TransSystem : IExecuteSystem
                 return (int)(posX.y - posY.y);
             return (int)(posX.x - posY.x);
         });
-        foreach(var e in entities)
+        foreach (var e in entities)
         {
             Trans(e);
         }
@@ -42,14 +42,13 @@ public class TransSystem : IExecuteSystem
                     var g = Context<Default>.AllOf<ObjectComp>().Where(t => t.Get<ObjectComp>().name ==
                                                                              Name.OwordToO(entity.Get<ObjectWordsComp>().name));
 
+                    var transType = TransType(e);
+
                     foreach (var t in g)
                     {
-                        if (e == null)
-                        {
+                        if (transType == 0)
                             t.Remove<PropertyComp>();
-                            continue;
-                        }
-                        if (e.Has<ObjectWordsComp>())
+                        else if (transType == 1)
                             Trans(t, e.Get<ObjectWordsComp>().name);
                         else
                             Trans(t, e.Get<ProperWordsComp>().name);
@@ -102,6 +101,14 @@ public class TransSystem : IExecuteSystem
         if (!e.Has<PropertyComp>())
             e.Add<PropertyComp>();
         e.Modify<PropertyComp>().SetValue(Name.PwordToP(properWords));
+    }
+    int TransType(Entity e)
+    {
+        if (e == null)
+            return 0;
+        if (e.Has<ObjectWordsComp>())
+            return 1;
+        return 2;
     }
 }
 
