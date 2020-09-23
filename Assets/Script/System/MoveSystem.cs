@@ -53,18 +53,18 @@ public class MoveSystem : ReactiveSystem
             movePush(e, new Vector2(e.Get<InputComp>().horizontal, e.Get<InputComp>().vertical), overlapEntities);
             //移动到新的位置
             //修改两个格子的映射信息
-            GameController.Instance.posToEntity[e.Get<PosComp>().value].Remove(e);
+            //GameController.Instance.posToEntity[e.Get<PosComp>().value].Remove(e);
             e.Modify<PosComp>().SetValue(newPos);
-            GameController.Instance.posToEntity[e.Get<PosComp>().value].Add(e);
+            //GameController.Instance.posToEntity[e.Get<PosComp>().value].Add(e);
         }
         //没有重叠
         else
         {
             //移动到新位置
             //修改格子映射信息
-            GameController.Instance.posToEntity[e.Get<PosComp>().value].Remove(e);
+            //GameController.Instance.posToEntity[e.Get<PosComp>().value].Remove(e);
             e.Modify<PosComp>().SetValue(newPos);
-            GameController.Instance.posToEntity[e.Get<PosComp>().value].Add(e);
+           // GameController.Instance.posToEntity[e.Get<PosComp>().value].Add(e);
         }
     }
     private bool hasStop(List<Entity> list)

@@ -91,7 +91,7 @@ public class TransSystem : IExecuteSystem
     {
         e.Modify<ObjectComp>().SetValue(Name.OwordToO(objectWords));
         if (e.Has<SpriteComp>())
-            e.Modify<SpriteComp>().SetValue(Name.OwordToSName(objectWords));
+            e.Modify<SpriteComp>().SetValue(Name.OToSName(objectWords));
     }
     void Trans(Entity e, Name.ProperWords properWords)
     {
