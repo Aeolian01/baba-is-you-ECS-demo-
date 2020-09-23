@@ -27,7 +27,7 @@ public class GameData
         {
             for (int j = 0; j < MapReader.mapWidth; j++)
             {
-                Debug.Log($"坐标:{i},{j}");
+                //Debug.Log($"坐标:{i},{j}");
                 var pos = new Vector2(DetlaSize * (j + 1), DetlaSize * (i + 1));
                 var unit = GameObject.Instantiate(Resources.Load<GameObject>("Unit"), pos, Quaternion.identity, Map);
                 unit.GetComponent<RectTransform>().sizeDelta = new Vector2(DetlaSize, DetlaSize);
