@@ -380,15 +380,21 @@ public class GameData
         GameController.GameSystem.ClearReactiveSystems();
         Contexts.Default.DestroyAllEntities();
         foreach (var go in gos)
-
-    public void ReFreshDic(List<Entity> entities=null)
+        {
+            GameObject.Destroy(go.Value);
+        }
+        gos.Clear();
+        posToEntity.Clear();
+        LoadLevel(1);
+        isWin = false;
+    }
+    public void ReFreshDic(List<Entity> entities = null)
     {
         var _group = Context<Default>.AllOf<PosComp>();
         var dic = GameData.Instance.posToEntity;
         dic.Clear();
         foreach (var e in _group)
         {
-            GameObject.Destroy(go.Value);
             var pos = e.Get<PosComp>().value;
 #if UNITY_EDITOR
             var s = e.name.Split(new char[] { '(' });
@@ -420,10 +426,6 @@ public class GameData
                 dic[pos] = entitys;
             }
         }
-        gos.Clear();
-        posToEntity.Clear();
-        LoadLevel(1);
-        isWin = false;
-    }
+    } 
 }
 
