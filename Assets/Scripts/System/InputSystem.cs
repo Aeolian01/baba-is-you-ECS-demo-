@@ -4,33 +4,24 @@ using UnityEngine;
 
 //System执行顺序（越大优先级越高）
 [UnnamedFeature(90)]
-public class InputSystem : IExecuteSystem, ICleanupSystem
+public class InputSystem : IExecuteSystem
 {
-    public void Cleanup()
-    {
-        foreach (var idx in Data.GetEntitiesByAspect(Aspects.You))
-        {
-            var e = Contexts.Default.GetEntity(idx);
-            e.Remove<InputComp>();
-        }
-    }
+    private Data data;
 
     public void Execute()
     {
+        data = Contexts.Default.GetUnique<DataComp>().data;
         int y = (int)Input.GetAxisRaw("Horizontal");
         int x = (int)Input.GetAxisRaw("Vertical");
-        foreach (var idx in Data.GetEntitiesByAspect(Aspects.You))
+        var input = Contexts.Default.AddUnique<InputComp>();
+        if (x != 0)
         {
-            var e = Contexts.Default.GetEntity(idx);
-            var input = e.Add<InputComp>();
-            if (x != 0)
-            {
-                input.SetValue(new Vector2Int(-x, 0));
-            }
-            else
-            {
-                input.SetValue(new Vector2Int(0, y));
-            }
+            input.SetValue(new Vector2Int(-x, 0));
         }
+        else
+        {
+            input.SetValue(new Vector2Int(0, y));
+        }
+
     }
 }

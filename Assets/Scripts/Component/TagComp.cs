@@ -4,9 +4,9 @@ using System;
 public class TagComp : IComponent
 {
     public Tag tag { private set; get; }
-    public void SetValue(Tag t)
+    public void SetValue(Tag tag)
     {
-        tag = t;
+        this.tag = tag;
     }
 
 }

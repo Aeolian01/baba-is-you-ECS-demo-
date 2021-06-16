@@ -8,31 +8,34 @@ public class PushSystem : IExecuteSystem
 {
     private HashSet<int> _moveTargetsList = new HashSet<int>();
     private HashSet<int> _tempTargetsList = new HashSet<int>();
+    private Data data;
     public void Execute()
     {
-        if (Data.Timer < Data.Interval)
+        data = Contexts.Default.GetUnique<DataComp>().data;
+        if (data.Timer < data.Interval)
             return;
-        Data.Timer = 0;
+        data.Timer = 0;
+
+        var input = Contexts.Default.GetUnique<InputComp>().input;
+        Vector2Int dir = input;
+        // 没有输入 方向为零
+        if (dir == Vector2Int.zero)
+            return;
+
         _moveTargetsList.Clear();
-        Vector2Int dir = Vector2Int.zero;
-        foreach (var idx in Data.GetEntitiesByAspect(Aspects.You))
+
+        foreach (var idx in data.GetEntitiesByAspect(Aspects.You))
         {
             // 已经加入移到列表
             if (_moveTargetsList.Contains(idx))
                 continue;
 
             var e = Contexts.Default.GetEntity(idx);
-            var input = e.Get<InputComp>();
-            dir = input.Input;
 
-            // 没有输入 方向为零
-            if (dir == Vector2Int.zero)
-                return;
-
-            var pos = e.Get<PosComp>();
+            var pos = e.Get<PosComp>().pos;
             _tempTargetsList.Clear();
             _tempTargetsList.Add(idx);
-            var newPos = input.Input + pos.Pos;
+            var newPos = dir + pos;
 
             // 能推动
             if (CollectMoveTargets(ref _tempTargetsList, newPos, dir))
@@ -49,17 +52,17 @@ public class PushSystem : IExecuteSystem
         {
             var mEntity = Contexts.Default.GetEntity(midx);
             var mPos = mEntity.Get<PosComp>();
-            var mOldPos = mPos.Pos;
+            var mOldPos = mPos.pos;
 
             // 更新Map
-            Data.GetMapNodeList(mOldPos.x, mOldPos.y).Remove(midx);
+            data.GetMapNodeList(mOldPos.x, mOldPos.y).Remove(midx);
             var mNewPos = mOldPos + dir;
             mPos.SetValue(mNewPos);
-            Data.GetMapNodeList(mNewPos.x, mNewPos.y).Add(midx);
+            data.GetMapNodeList(mNewPos.x, mNewPos.y).Add(midx);
 
             // 显示更新
             Helper.SetEntityName(mEntity);
-            Data.GameObjectChangedEvent(midx);
+            data.GameObjectChangedEvent(midx);
         }
 
     }
@@ -67,14 +70,14 @@ public class PushSystem : IExecuteSystem
     /// <summary>
     /// 收集下一个位置的可移动物体
     /// </summary>
-    /// <param name="list">可移动物体</param>
-    /// <param name="Pos">位置</param>
+    /// <param name="targets">可移动物体</param>
+    /// <param name="pos">位置</param>
     /// <param name="dir">方向</param>
     /// <returns>可移动：true 不可移动：false</returns>
-    private bool CollectMoveTargets(ref HashSet<int> list, Vector2Int Pos, Vector2Int dir)
+    private bool CollectMoveTargets(ref HashSet<int> targets, Vector2Int pos, Vector2Int dir)
     {
         //在新位置
-        HashSet<int> nodeList = Data.GetMapNodeList(Pos.x, Pos.y);
+        HashSet<int> nodeList = data.GetMapNodeList(pos.x, pos.y);
 
         //有实体
         if (nodeList.Count != 0)
@@ -87,11 +90,11 @@ public class PushSystem : IExecuteSystem
             {
                 var e = Contexts.Default.GetEntity(idx);
                 var tag = e.Get<TagComp>().tag;
-                if (Data.HasAspect(tag, Aspects.Push))
+                if (data.CheckTagHasAspect(tag, Aspects.Push))
                 {
-                    list.Add(idx);
-                    var nextPos = e.Get<PosComp>().Pos + dir;
-                    if (!CollectMoveTargets(ref list, nextPos, dir))
+                    targets.Add(idx);
+                    var nextPos = e.Get<PosComp>().pos + dir;
+                    if (!CollectMoveTargets(ref targets, nextPos, dir))
                         return false;
                 }
             }
@@ -105,7 +108,7 @@ public class PushSystem : IExecuteSystem
         {
             var e = Contexts.Default.GetEntity(idx);
             var tag = e.Get<TagComp>().tag;
-            if (Data.HasAspect(tag, Aspects.Stop))
+            if (data.CheckTagHasAspect(tag, Aspects.Stop))
             {
                 return true;
             }

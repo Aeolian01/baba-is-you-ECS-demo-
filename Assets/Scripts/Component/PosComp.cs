@@ -3,10 +3,10 @@ using UnityEngine;
 
 public class PosComp : IComponent
 {
-    public Vector2Int Pos { private set; get; }
+    public Vector2Int pos { private set; get; }
 
     public void SetValue(Vector2Int pos)
     {
-        Pos = pos;
+        this.pos = pos;
     }
 }

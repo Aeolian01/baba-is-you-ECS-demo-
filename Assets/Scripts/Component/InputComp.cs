@@ -1,12 +1,12 @@
 using Entitas;
 using UnityEngine;
 
-public class InputComp : IComponent
+public class InputComp : IUnique, IComponent
 {
-    public Vector2Int Input { private set; get; }
+    public Vector2Int input { private set; get; }
 
     public void SetValue(Vector2Int input)
     {
-        Input = input;
+        this.input = input;
     }
 }

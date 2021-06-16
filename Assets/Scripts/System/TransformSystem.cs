@@ -9,15 +9,17 @@ public class TransformSystem : IExecuteSystem, IInitializeSystem
 {
 
     private Array _AspectsEnum = Enum.GetValues(typeof(Aspects));
+    private Data data;
 
     //初始化 添加基础规则
     public void Initialize()
     {
-        for (int i = 0; i < Data.Width; i++)
+        data = Contexts.Default.GetUnique<DataComp>().data;
+        for (int i = 0; i < data.Width; i++)
         {
-            for (int ii = 0; ii < Data.Height; ii++)
+            for (int ii = 0; ii < data.Height; ii++)
             {
-                foreach (var idx in Data.GetMapNodeList(i, ii))
+                foreach (var idx in data.GetMapNodeList(i, ii))
                 {
                     var e = Contexts.Default.GetEntity(idx);
                     var tagComp = e.Get<TagComp>();
@@ -29,25 +31,26 @@ public class TransformSystem : IExecuteSystem, IInitializeSystem
                     {
                         e.Add<IsComp>();
                     }
-                    Data.AddEntityID(idx, tagComp.tag);
+                    data.AddEntityID(idx, tagComp.tag);
                 }
             }
         }
 
-        Data.AddRule(new Rule(Tag.BabaWord, Aspects.Push));
-        Data.AddRule(new Rule(Tag.FlagWord, Aspects.Push));
-        Data.AddRule(new Rule(Tag.IsWord, Aspects.Push));
-        Data.AddRule(new Rule(Tag.PushWord, Aspects.Push));
-        Data.AddRule(new Rule(Tag.RockWord, Aspects.Push));
-        Data.AddRule(new Rule(Tag.StopWord, Aspects.Push));
-        Data.AddRule(new Rule(Tag.WallWord, Aspects.Push));
-        Data.AddRule(new Rule(Tag.WinWord, Aspects.Push));
-        Data.AddRule(new Rule(Tag.YouWord, Aspects.Push));
-        Data.AddRule(new Rule(Tag.Edge, Aspects.Stop));
-        Data.RuleChanged = true;
+        data.AddRule(new Rule(Tag.BabaWord, Aspects.Push));
+        data.AddRule(new Rule(Tag.FlagWord, Aspects.Push));
+        data.AddRule(new Rule(Tag.IsWord, Aspects.Push));
+        data.AddRule(new Rule(Tag.PushWord, Aspects.Push));
+        data.AddRule(new Rule(Tag.RockWord, Aspects.Push));
+        data.AddRule(new Rule(Tag.StopWord, Aspects.Push));
+        data.AddRule(new Rule(Tag.WallWord, Aspects.Push));
+        data.AddRule(new Rule(Tag.WinWord, Aspects.Push));
+        data.AddRule(new Rule(Tag.YouWord, Aspects.Push));
+        data.AddRule(new Rule(Tag.Edge, Aspects.Stop));
+        data.RuleChanged = true;
     }
     public void Execute()
     {
+        data = Contexts.Default.GetUnique<DataComp>().data;
         TransformTag();
         TransformAspect();
     }
@@ -58,27 +61,27 @@ public class TransformSystem : IExecuteSystem, IInitializeSystem
     /// </summary>
     void TransformTag()
     {
-        foreach (var rule in Data.GetRules())
+        foreach (var rule in data.GetRules())
         {
             if (rule.HasTagRule())
             {
+                var tag = rule.GetTag();
                 var tagRule = rule.GetTagRule();
-                var tagList = Data.GetEntitiesByTag(tagRule);
+                var tagList = data.GetEntitiesByTag(tag);
                 if (tagList.Count == 0)
                 {
                     continue;
                 }
-                var ruleList = Data.GetEntitiesByTag(tagRule);
                 foreach (var idx in tagList)
                 {
                     var e = Contexts.Default.GetEntity(idx);
                     var tagComp = e.Get<TagComp>();
                     tagComp?.SetValue(tagRule);
                     Helper.SetEntityName(e);
-                    Data.GameObjectChangedEvent(idx);
+                    data.GameObjectChangedEvent(idx);
+                    data.AddEntityID(idx, tagRule);
                 }
-                ruleList.AddRange(tagList);
-                tagList.Clear();
+                data.Clear(tag);
             }
         }
     }
@@ -88,18 +91,21 @@ public class TransformSystem : IExecuteSystem, IInitializeSystem
     /// </summary>
     void TransformAspect()
     {
-        if (Data.RuleChanged)
+        if (data.RuleChanged)
         {
             foreach (Aspects asp in _AspectsEnum)
             {
-                Data.GetEntitiesByAspect(asp).Clear();
+                data.Clear(asp); ;
                 var tags = Helper.AspectRuleToTagList(asp);
                 foreach (var tag in tags)
                 {
-                    Data.GetEntitiesByAspect(asp).AddRange(Helper.GetList(tag));
+                    foreach (var idx in data.GetEntitiesByTag(tag))
+                    {
+                        data.AddEntityID(idx, asp);
+                    }
                 }
             }
-            Data.RuleChanged = false;
+            data.RuleChanged = false;
         }
     }
 }

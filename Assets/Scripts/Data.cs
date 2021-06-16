@@ -36,49 +36,48 @@ public enum Aspects
     Push = 1 << 2,
     Stop = 1 << 3,
 }
-public static class Data
+public class Data
 {
-    private static Grid[,] _map;
-    public static int Width;
-    public static int Height;
-    public static float Timer = 0;
-    public const float Interval = 0.15f;
+    private Grid[,] _map;
+    public int Width;
+    public int Height;
+    public float Timer = 0;
+    public float Interval = 0.15f;
 
-    private static Dictionary<int, List<int>> _tagObjPool = new Dictionary<int, List<int>>();
-    private static Dictionary<int, List<int>> _aspObjPool = new Dictionary<int, List<int>>();
-    private static Dictionary<int, GameObject> _gameObjects = new Dictionary<int, GameObject>();
-    private static Dictionary<int, Sprite> _sprites = new Dictionary<int, Sprite>();
-    private static HashSet<Rule> _rule = new HashSet<Rule>();
+    private Dictionary<int, List<int>> _tagObjPool = new Dictionary<int, List<int>>();
+    private Dictionary<int, List<int>> _aspObjPool = new Dictionary<int, List<int>>();
+    private Dictionary<int, GameObject> _gameObjects = new Dictionary<int, GameObject>();
+    private Dictionary<int, Sprite> _sprites = new Dictionary<int, Sprite>();
+    private HashSet<Rule> _rule = new HashSet<Rule>();
 
-    public static bool RuleChanged;
+    public bool RuleChanged;
 
-    static Data()
+    public Data()
     {
         foreach (var i in Enum.GetValues(typeof(Tag)))
         {
             _sprites.Add((int)i, Resources.Load<Sprite>("Sprites/" + i.ToString()));
         }
     }
-    public static HashSet<int> GetMapNodeList(int posX, int posY)
+    public HashSet<int> GetMapNodeList(int posX, int posY)
     {
         return _map[posX, posY].NodeList;
     }
-    public static Dictionary<int, List<int>> GetTagPool()
+    public Dictionary<int, List<int>> GetTagPool()
     {
         return _tagObjPool;
     }
 
-    public static Dictionary<int, List<int>> GetAspPool()
+    public Dictionary<int, List<int>> GetAspPool()
     {
         return _aspObjPool;
     }
 
-    public static HashSet<Rule> GetRules()
+    public HashSet<Rule> GetRules()
     {
         return _rule;
     }
-
-    public static void LoadLevel(int id)
+    public void LoadLevel(int id)
     {
         var mapFile = MapReader.Instance.ReadFile(id);
         Width = MapReader.Instance.mapWidth;
@@ -99,9 +98,10 @@ public static class Data
                 GameObjectChangedEvent(e.creationIndex);
             }
         }
+        Contexts.Default.AddUnique<DataComp>().SetValue(this);
     }
 
-    public static Grid GetGrid(Vector2Int pos)
+    public Grid GetGrid(Vector2Int pos)
     {
         if (pos.x < 0 || pos.x > Width || pos.y < 0 || pos.y > Height)
         {
@@ -110,12 +110,12 @@ public static class Data
         return _map[pos.x, pos.y];
     }
 
-    public static Entity GetEntity(int idx)
+    public Entity GetEntity(int idx)
     {
         return Contexts.Default.GetEntity(idx);
     }
 
-    public static Tag GetWord(Vector2Int pos)
+    public Tag GetWord(Vector2Int pos)
     {
         var gird = GetGrid(pos);
         if (gird != null)
@@ -132,7 +132,7 @@ public static class Data
         return 0;
     }
 
-    public static List<int> GetEntitiesByAspect(Aspects aspects)
+    public IReadOnlyList<int> GetEntitiesByAspect(Aspects aspects)
     {
         //var tagList = Helper.RuleToTagList(aspects);
         //var result = new List<int>();
@@ -144,39 +144,54 @@ public static class Data
         return Helper.GetList(aspects);
     }
 
-    public static List<int> GetEntitiesByTag(Tag tag)
+    public IReadOnlyList<int> GetEntitiesByTag(Tag tag)
     {
         return Helper.GetList(tag);
     }
 
-    public static void AddEntityID(int id, Tag tag)
+    public void AddEntityID(int id, Aspects asp)
+    {
+        Helper.GetList(asp).Add(id);
+    }
+
+    public void AddEntityID(int id, Tag tag)
     {
         Helper.GetList(tag).Add(id);
     }
 
-    public static bool HasAspect(Tag tag, Aspects aspects)
+    public void Clear(Tag tag)
+    {
+        Helper.GetList(tag).Clear();
+    }
+
+    public void Clear(Aspects asp)
+    {
+        Helper.GetList(asp).Clear();
+    }
+
+    public bool CheckTagHasAspect(Tag tag, Aspects aspects)
     {
         return _rule.Contains(new Rule(tag, aspects));
     }
 
-    public static void AddRule(Rule r)
+    public void AddRule(Rule r)
     {
-        if (r.GetTag() == 0)
+        if (!r.HasTag())
             return;
-        if (r.GetTagRule() == 0 && r.GetAspectRule() == 0)
+        if (!r.HasRule())
             return;
         _rule.Add(r);
     }
 
-    public static void RemoveRule(Rule r)
+    public void RemoveRule(Rule r)
     {
         _rule.Remove(r);
     }
 
-    public static void GameObjectChangedEvent(int id)
+    public void GameObjectChangedEvent(int id)
     {
         var e = Contexts.Default.GetEntity(id);
-        var pos = e.Get<PosComp>().Pos;
+        var pos = e.Get<PosComp>().pos;
         var tag = e.Get<TagComp>().tag;
         var gObj = _gameObjects[id];
         gObj.transform.position = new Vector3(pos.y, -pos.x, 0);

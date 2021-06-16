@@ -50,6 +50,14 @@ public struct Rule
     {
         return _aspectRule != 0;
     }
+    public bool HasRule()
+    {
+        return HasTagRule() || HasAspectRule();
+    }
+    public bool HasTag()
+    {
+        return _tag != 0;
+    }
 
     public bool CheckAspectRule(Aspects aspects)
     {

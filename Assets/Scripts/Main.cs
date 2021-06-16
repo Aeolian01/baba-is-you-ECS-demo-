@@ -7,7 +7,8 @@ using UnityEngine;
 
 public class Main : MonoBehaviour
 {
-    private static Systems _gameSystem;
+    private Systems _gameSystem;
+    private Data data;
 
 
     void Start()
@@ -16,7 +17,8 @@ public class Main : MonoBehaviour
 #if UNITY_EDITOR
         ContextObserverHelper.ObserveAll(contexts);
 #endif
-        Data.LoadLevel(1);
+        data = new Data();
+        data.LoadLevel(1);
 
 
 
@@ -31,7 +33,7 @@ public class Main : MonoBehaviour
 
     void Update()
     {
-        Data.Timer += Time.deltaTime;
+        data.Timer += Time.deltaTime;
         _gameSystem.Execute();
         _gameSystem.Cleanup();
     }

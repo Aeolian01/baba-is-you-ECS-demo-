@@ -10,50 +10,53 @@ public class ChangeRuleSystem : IExecuteSystem
     static Vector2Int up = new Vector2Int(-1, 0);
     static Vector2Int right = new Vector2Int(0, 1);
     static Vector2Int left = new Vector2Int(0, -1);
+    private Data data;
     public void Execute()
     {
-        var isList = Data.GetEntitiesByTag(Tag.IsWord);
+        data = Contexts.Default.GetUnique<DataComp>().data;
+        var isList = data.GetEntitiesByTag(Tag.IsWord);
         bool ruleStatus = false;
         foreach (var idx in isList)
         {
             var e = Contexts.Default.GetEntity(idx);
             var isData = e.Get<IsComp>();
-            var pos = e.Get<PosComp>().Pos;
+            var pos = e.Get<PosComp>().pos;
             //left and right
-            var leftWord = Data.GetWord(pos + left);
-            var rightWord = Data.GetWord(pos + right);
+            var leftWord = data.GetWord(pos + left);
+            var rightWord = data.GetWord(pos + right);
             var rule = new Rule(Helper.WordToTag(leftWord), Helper.WordToTag(rightWord), Helper.WordToAsp(rightWord));
 
             // 规则不同 更新规则
             if (rule != isData.ruleH)
             {
-                Data.RemoveRule(isData.ruleH);
-                Data.AddRule(rule);
+                data.RemoveRule(isData.ruleH);
+                data.AddRule(rule);
 
                 //Aspect规则更新
-                ruleStatus |= rule.HasAspectRule() || isData.ruleH.HasAspectRule();
+                ruleStatus |= rule.HasRule() || isData.ruleH.HasRule();
+
 
                 isData.ruleH = rule;
             }
 
 
             //up and down
-            var upWord = Data.GetWord(pos + up);
-            var downWord = Data.GetWord(pos + down);
+            var upWord = data.GetWord(pos + up);
+            var downWord = data.GetWord(pos + down);
             rule = new Rule(Helper.WordToTag(upWord), Helper.WordToTag(downWord), Helper.WordToAsp(downWord));
 
             // 规则不同 更新规则
             if (rule != isData.ruleV)
             {
-                Data.RemoveRule(isData.ruleV);
-                Data.AddRule(rule);
+                data.RemoveRule(isData.ruleV);
+                data.AddRule(rule);
 
                 //Aspect规则更新
-                ruleStatus |= rule.HasAspectRule() || isData.ruleV.HasAspectRule();
+                ruleStatus |= rule.HasRule() || isData.ruleV.HasRule();
 
                 isData.ruleV = rule;
             }
         }
-        Data.RuleChanged = ruleStatus;
+        data.RuleChanged = ruleStatus;
     }
 }

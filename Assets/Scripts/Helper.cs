@@ -44,20 +44,22 @@ public static class Helper
     }
     public static List<int> GetList(Tag tag)
     {
-        if (!Data.GetTagPool().TryGetValue((int)tag, out var list))
+        var data = Contexts.Default.GetUnique<DataComp>().data;
+        if (!data.GetTagPool().TryGetValue((int)tag, out var list))
         {
             list = new List<int>();
-            Data.GetTagPool().Add((int)tag, list);
+            data.GetTagPool().Add((int)tag, list);
         }
         return list;
     }
 
     public static List<int> GetList(Aspects asp)
     {
-        if (!Data.GetAspPool().TryGetValue((int)asp, out var list))
+        var data = Contexts.Default.GetUnique<DataComp>().data;
+        if (!data.GetAspPool().TryGetValue((int)asp, out var list))
         {
             list = new List<int>();
-            Data.GetAspPool().Add((int)asp, list);
+            data.GetAspPool().Add((int)asp, list);
         }
         return list;
     }
@@ -68,7 +70,8 @@ public static class Helper
     /// <returns></returns>
     public static IEnumerable<Tag> AspectRuleToTagList(Aspects aspects)
     {
-        return Data.GetRules().Where(x => x.CheckAspectRule(aspects)).Select(x => x.GetTag());
+        var data = Contexts.Default.GetUnique<DataComp>().data;
+        return data.GetRules().Where(x => x.CheckAspectRule(aspects)).Select(x => x.GetTag());
     }
 
     public static void SetEntityName(Entity e)
@@ -77,7 +80,7 @@ public static class Helper
         var posComp = e.Get<PosComp>();
         var tagComp = e.Get<TagComp>();
 
-        e.name = $"{posComp.Pos} {tagComp.tag}";
+        e.name = $"{posComp.pos} {tagComp.tag}";
 #endif
     }
 }
