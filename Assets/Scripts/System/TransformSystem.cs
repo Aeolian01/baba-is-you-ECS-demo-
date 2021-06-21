@@ -7,8 +7,6 @@ using UnityEngine;
 [UnnamedFeature(100)]
 public class TransformSystem : IExecuteSystem, IInitializeSystem
 {
-
-    private Array _AspectsEnum = Enum.GetValues(typeof(Aspects));
     private Data data;
 
     //初始化 添加基础规则
@@ -36,29 +34,28 @@ public class TransformSystem : IExecuteSystem, IInitializeSystem
             }
         }
 
-        data.AddRule(new Rule(Tag.BabaWord, Aspects.Push));
-        data.AddRule(new Rule(Tag.FlagWord, Aspects.Push));
-        data.AddRule(new Rule(Tag.IsWord, Aspects.Push));
-        data.AddRule(new Rule(Tag.PushWord, Aspects.Push));
-        data.AddRule(new Rule(Tag.RockWord, Aspects.Push));
-        data.AddRule(new Rule(Tag.StopWord, Aspects.Push));
-        data.AddRule(new Rule(Tag.WallWord, Aspects.Push));
-        data.AddRule(new Rule(Tag.WinWord, Aspects.Push));
-        data.AddRule(new Rule(Tag.YouWord, Aspects.Push));
-        data.AddRule(new Rule(Tag.Edge, Aspects.Stop));
-        data.RuleChanged = true;
+        data.AddRule(new Rule(Tag.BabaWord, Aspects.Push, Vector2Int.zero));
+        data.AddRule(new Rule(Tag.FlagWord, Aspects.Push, Vector2Int.zero));
+        data.AddRule(new Rule(Tag.IsWord, Aspects.Push, Vector2Int.zero));
+        data.AddRule(new Rule(Tag.PushWord, Aspects.Push, Vector2Int.zero));
+        data.AddRule(new Rule(Tag.RockWord, Aspects.Push, Vector2Int.zero));
+        data.AddRule(new Rule(Tag.StopWord, Aspects.Push, Vector2Int.zero));
+        data.AddRule(new Rule(Tag.WallWord, Aspects.Push, Vector2Int.zero));
+        data.AddRule(new Rule(Tag.WinWord, Aspects.Push, Vector2Int.zero));
+        data.AddRule(new Rule(Tag.YouWord, Aspects.Push, Vector2Int.zero));
+        data.AddRule(new Rule(Tag.Edge, Aspects.Stop, Vector2Int.zero));
     }
     public void Execute()
     {
         data = Contexts.Default.GetUnique<DataComp>().data;
-        TransformTag();
-        TransformAspect();
+        if (data.RuleChanged)
+        {
+            TransformTag();
+            TransformAspect();
+        }
+        data.ResetRuleChanged();
     }
 
-    /// <summary>
-    /// 物体转物体 
-    /// 可优化：对”IsWord"排序 在单帧内完成转变 
-    /// </summary>
     void TransformTag()
     {
         foreach (var rule in data.GetRules())
@@ -85,27 +82,21 @@ public class TransformSystem : IExecuteSystem, IInitializeSystem
             }
         }
     }
-    /// <summary>
-    /// 物体属性转变
-    /// 可优化：每个属性单独标记是否改变
-    /// </summary>
+
     void TransformAspect()
     {
-        if (data.RuleChanged)
+        foreach (var i in data.GetChangedAspRules())
         {
-            foreach (Aspects asp in _AspectsEnum)
+            var asp = (Aspects)i;
+            data.Clear(asp); ;
+            var tags = Helper.AspectRuleToTagList(asp);
+            foreach (var tag in tags)
             {
-                data.Clear(asp); ;
-                var tags = Helper.AspectRuleToTagList(asp);
-                foreach (var tag in tags)
+                foreach (var idx in data.GetEntitiesByTag(tag))
                 {
-                    foreach (var idx in data.GetEntitiesByTag(tag))
-                    {
-                        data.AddEntityID(idx, asp);
-                    }
+                    data.AddEntityID(idx, asp);
                 }
             }
-            data.RuleChanged = false;
         }
     }
 }

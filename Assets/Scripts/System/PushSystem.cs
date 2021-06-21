@@ -12,15 +12,17 @@ public class PushSystem : IExecuteSystem
     public void Execute()
     {
         data = Contexts.Default.GetUnique<DataComp>().data;
-        if (data.Timer < data.Interval)
-            return;
-        data.Timer = 0;
+        var inputComp = Contexts.Default.GetUnique<InputComp>();
+        Vector2Int dir = inputComp.input;
 
-        var input = Contexts.Default.GetUnique<InputComp>().input;
-        Vector2Int dir = input;
         // 没有输入 方向为零
         if (dir == Vector2Int.zero)
             return;
+
+        if (data.Timer < data.Interval && !inputComp.refresh)
+            return;
+
+        data.Timer = 0;
 
         _moveTargetsList.Clear();
 
@@ -55,10 +57,10 @@ public class PushSystem : IExecuteSystem
             var mOldPos = mPos.pos;
 
             // 更新Map
-            data.GetMapNodeList(mOldPos.x, mOldPos.y).Remove(midx);
+            data.RemoveMapNode(mOldPos, midx);
             var mNewPos = mOldPos + dir;
             mPos.SetValue(mNewPos);
-            data.GetMapNodeList(mNewPos.x, mNewPos.y).Add(midx);
+            data.AddMapNode(mNewPos, midx);
 
             // 显示更新
             Helper.SetEntityName(mEntity);
@@ -77,7 +79,7 @@ public class PushSystem : IExecuteSystem
     private bool CollectMoveTargets(ref HashSet<int> targets, Vector2Int pos, Vector2Int dir)
     {
         //在新位置
-        HashSet<int> nodeList = data.GetMapNodeList(pos.x, pos.y);
+        var nodeList = data.GetMapNodeList(pos.x, pos.y);
 
         //有实体
         if (nodeList.Count != 0)

@@ -44,13 +44,16 @@ public class Data
     public float Timer = 0;
     public float Interval = 0.15f;
 
+    private Array _AspectsEnum = Enum.GetValues(typeof(Aspects));
+
     private Dictionary<int, List<int>> _tagObjPool = new Dictionary<int, List<int>>();
     private Dictionary<int, List<int>> _aspObjPool = new Dictionary<int, List<int>>();
     private Dictionary<int, GameObject> _gameObjects = new Dictionary<int, GameObject>();
     private Dictionary<int, Sprite> _sprites = new Dictionary<int, Sprite>();
-    private HashSet<Rule> _rule = new HashSet<Rule>();
+    private List<Rule> _rule = new List<Rule>();
 
-    public bool RuleChanged;
+    public bool RuleChanged { private set; get; }
+    private List<int> ChangedAspRules = new List<int>();
 
     public Data()
     {
@@ -59,41 +62,74 @@ public class Data
             _sprites.Add((int)i, Resources.Load<Sprite>("Sprites/" + i.ToString()));
         }
     }
-    public HashSet<int> GetMapNodeList(int posX, int posY)
+
+    public IReadOnlyCollection<int> GetMapNodeList(int posX, int posY)
     {
         return _map[posX, posY].NodeList;
     }
-    public Dictionary<int, List<int>> GetTagPool()
+
+    public void RemoveMapNode(Vector2Int pos, int idx)
+    {
+        _map[pos.x, pos.y].NodeList.Remove(idx);
+    }
+
+    public void AddMapNode(Vector2Int pos, int idx)
+    {
+        _map[pos.x, pos.y].NodeList.Add(idx);
+    }
+
+    internal Dictionary<int, List<int>> GetTagPool()
     {
         return _tagObjPool;
     }
 
-    public Dictionary<int, List<int>> GetAspPool()
+    internal Dictionary<int, List<int>> GetAspPool()
     {
         return _aspObjPool;
     }
 
-    public HashSet<Rule> GetRules()
+    public IReadOnlyList<int> GetChangedAspRules()
+    {
+        return ChangedAspRules;
+    }
+
+    public IReadOnlyList<Rule> GetRules()
     {
         return _rule;
     }
+
+    public void ResetRuleChanged()
+    {
+        RuleChanged = false;
+        ChangedAspRules.Clear();
+    }
+
+    public void AddChangedAspRules(int idx)
+    {
+        if (ChangedAspRules.Contains(idx))
+            return;
+        if (idx == 0)
+            return;
+        ChangedAspRules.Add(idx);
+    }
+
     public void LoadLevel(int id)
     {
         var mapFile = MapReader.Instance.ReadFile(id);
         Width = MapReader.Instance.mapWidth;
         Height = MapReader.Instance.mapHeight;
         _map = new Grid[Height, Width];
-        for (int i = 0; i < Height; i++)
+        for (int x = 0; x < Height; x++)
         {
-            for (int ii = 0; ii < Width; ii++)
+            for (int y = 0; y < Width; y++)
             {
                 var e = Contexts.Default.CreateEntity();
-                e.Add<PosComp>().SetValue(new Vector2Int(i, ii));
-                e.Add<TagComp>().SetValue((Tag)mapFile[i, ii]);
+                e.Add<PosComp>().SetValue(new Vector2Int(x, y));
+                e.Add<TagComp>().SetValue((Tag)mapFile[x, y]);
                 Helper.SetEntityName(e);
-                if (_map[i, ii] == null)
-                    _map[i, ii] = new Grid();
-                _map[i, ii].Add(e.creationIndex);
+                if (_map[x, y] == null)
+                    _map[x, y] = new Grid();
+                _map[x, y].Add(e.creationIndex);
                 _gameObjects.Add(e.creationIndex, GameObject.Instantiate<GameObject>(Resources.Load<GameObject>("Sprite")));
                 GameObjectChangedEvent(e.creationIndex);
             }
@@ -103,7 +139,7 @@ public class Data
 
     public Grid GetGrid(Vector2Int pos)
     {
-        if (pos.x < 0 || pos.x > Width || pos.y < 0 || pos.y > Height)
+        if (pos.x < 0 || pos.x >= Height || pos.y < 0 || pos.y >= Width)
         {
             return null;
         }
@@ -171,7 +207,20 @@ public class Data
 
     public bool CheckTagHasAspect(Tag tag, Aspects aspects)
     {
-        return _rule.Contains(new Rule(tag, aspects));
+        foreach (var r in _rule)
+        {
+            if (r.GetTag() == tag && r.GetAspectRule() == aspects)
+                return true;
+        }
+        return false;
+    }
+
+    public void RemoveRule(Rule r)
+    {
+        _rule.Remove(r);
+
+        //刷新规则
+        RefreshRules(r);
     }
 
     public void AddRule(Rule r)
@@ -180,12 +229,48 @@ public class Data
             return;
         if (!r.HasRule())
             return;
+        if (_rule.Contains(r))
+            return;
+        var Pos = r.GetPos();
+
+        //刷新规则
+        RefreshRules(r);
+
+        //有序插入
+        for (int i = 0; i < _rule.Count; i++)
+        {
+            var P = _rule[i].GetPos();
+            if (Compare(Pos, P) < 0)
+            {
+                _rule.Insert(i, r);
+                return;
+            }
+        }
         _rule.Add(r);
+
     }
 
-    public void RemoveRule(Rule r)
+    private void RefreshRules(Rule r)
     {
-        _rule.Remove(r);
+        AddChangedAspRules((int)r.GetAspectRule());
+        foreach (var idx in Helper.GetAspects(r.GetTag()))
+        {
+            AddChangedAspRules(idx);
+        }
+        foreach (var idx in Helper.GetAspects(r.GetTagRule()))
+        {
+            AddChangedAspRules(idx);
+        }
+        RuleChanged |= r.HasRule() && r.HasTag();
+    }
+
+    //位置比较 从上到下 从左到右
+    private int Compare(Vector2Int a, Vector2Int b)
+    {
+        if (a.x != b.x)
+            return a.x - b.x;
+        else
+            return a.y - b.y;
     }
 
     public void GameObjectChangedEvent(int id)

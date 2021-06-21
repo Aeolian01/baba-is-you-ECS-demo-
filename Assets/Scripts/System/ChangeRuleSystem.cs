@@ -15,7 +15,6 @@ public class ChangeRuleSystem : IExecuteSystem
     {
         data = Contexts.Default.GetUnique<DataComp>().data;
         var isList = data.GetEntitiesByTag(Tag.IsWord);
-        bool ruleStatus = false;
         foreach (var idx in isList)
         {
             var e = Contexts.Default.GetEntity(idx);
@@ -24,26 +23,22 @@ public class ChangeRuleSystem : IExecuteSystem
             //left and right
             var leftWord = data.GetWord(pos + left);
             var rightWord = data.GetWord(pos + right);
-            var rule = new Rule(Helper.WordToTag(leftWord), Helper.WordToTag(rightWord), Helper.WordToAsp(rightWord));
-
+            var rule = new Rule(Helper.WordToTag(leftWord), Helper.WordToTag(rightWord), Helper.WordToAsp(rightWord),pos);
             // 规则不同 更新规则
             if (rule != isData.ruleH)
             {
                 data.RemoveRule(isData.ruleH);
                 data.AddRule(rule);
 
-                //Aspect规则更新
-                ruleStatus |= rule.HasRule() || isData.ruleH.HasRule();
-
-
                 isData.ruleH = rule;
+
             }
 
 
             //up and down
             var upWord = data.GetWord(pos + up);
             var downWord = data.GetWord(pos + down);
-            rule = new Rule(Helper.WordToTag(upWord), Helper.WordToTag(downWord), Helper.WordToAsp(downWord));
+            rule = new Rule(Helper.WordToTag(upWord), Helper.WordToTag(downWord), Helper.WordToAsp(downWord), pos);
 
             // 规则不同 更新规则
             if (rule != isData.ruleV)
@@ -51,12 +46,8 @@ public class ChangeRuleSystem : IExecuteSystem
                 data.RemoveRule(isData.ruleV);
                 data.AddRule(rule);
 
-                //Aspect规则更新
-                ruleStatus |= rule.HasRule() || isData.ruleV.HasRule();
-
                 isData.ruleV = rule;
             }
         }
-        data.RuleChanged = ruleStatus;
     }
 }

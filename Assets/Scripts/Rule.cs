@@ -9,25 +9,29 @@ public struct Rule
     Tag _tag;
     Tag _tagRule;
     Aspects _aspectRule;
+    Vector2Int _pos;
 
-    public Rule(Tag tag, Tag tagRule, Aspects aspectRule)
+    public Rule(Tag tag, Tag tagRule, Aspects aspectRule,Vector2Int pos)
     {
         _tag = tag;
         _tagRule = tagRule;
         _aspectRule = aspectRule;
+        _pos = pos;
     }
-    public Rule(Tag tag, Tag tagRule)
+    public Rule(Tag tag, Tag tagRule, Vector2Int pos)
     {
         _tag = tag;
         _tagRule = tagRule;
         _aspectRule = 0;
+        _pos = pos;
     }
 
-    public Rule(Tag tag, Aspects aspectRule)
+    public Rule(Tag tag, Aspects aspectRule,Vector2Int pos)
     {
         _tag = tag;
         _tagRule = 0;
         _aspectRule = aspectRule;
+        _pos = pos;
     }
 
     public Tag GetTag()
@@ -41,6 +45,10 @@ public struct Rule
     public Aspects GetAspectRule()
     {
         return _aspectRule;
+    }
+    public Vector2Int GetPos()
+    {
+        return _pos;
     }
     public bool HasTagRule()
     {

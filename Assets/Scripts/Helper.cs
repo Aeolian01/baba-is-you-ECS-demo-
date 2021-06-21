@@ -63,6 +63,18 @@ public static class Helper
         }
         return list;
     }
+
+    public static List<int> GetAspects(Tag tag)
+    {
+        var data = Contexts.Default.GetUnique<DataComp>().data;
+        var list = new List<int>();
+        foreach (var r in data.GetRules())
+        {
+            if (r.GetTag() == tag && r.HasAspectRule())
+                list.Add((int)r.GetAspectRule());
+        }
+        return list;
+    }
     /// <summary>
     /// 所有包括 xx（Aspect)规则的 Tag
     /// </summary>
